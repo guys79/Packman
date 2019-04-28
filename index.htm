@@ -107,8 +107,9 @@ TIME:
         }
     }
 
-    //This fucntioon will set all the parameters that are responsinble for the drawing of the pacman in a certain direction
-    function setPackManParam(key_pressed)
+    //TYhis function will get the direction that the pacman is facing and will set the parameters of the packman so
+    //that once drawn, the pacman will look at the given direction.
+    function SetPackManParam(key_pressed)
     {
         //Down
         if(key_pressed==2)
@@ -160,6 +161,43 @@ TIME:
 
                     
     }
+    //This function recieves the center of the pacman and will draw it
+    function DrawPacman(center)
+    {
+        var key_pressed = GetKeyPressed();
+        if(init == true)
+        {
+            key_pressed = 4;
+            init = false;
+        }
+        SetPackManParam(key_pressed)
+        context.beginPath();
+        context.arc(center.x, center.y, 30, from_big_circle, to_big_circle); // half circle
+        context.lineTo(center.x, center.y);
+        context.fillStyle = pac_color; //color
+        context.fill();
+        context.beginPath();
+        context.arc(center.x + eye_center_x, center.y + eye_center_y, 5, 0, 2 * Math.PI); // circle
+        context.fillStyle = "black"; //color
+        context.fill();
+    }
+    //This function recieves the center of the one pointer and will draw it
+    function DrawOnePointer(center)
+    {
+        context.beginPath();
+        context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+        context.fillStyle = "black"; //color
+        context.fill();
+    }
+
+    //This function recieves the center of a wall and will draw it
+    function DrawWall(center)
+    {
+        context.beginPath();
+        context.rect(center.x - 30, center.y - 30, 60, 60);
+        context.fillStyle = "grey"; //color
+        context.fill();
+    }
     function Draw() {
        
         context.clearRect(0, 0, canvas.width, canvas.height); //clean board
@@ -170,34 +208,16 @@ TIME:
                 var center = new Object();
                 center.x = i * 60 + 30;
                 center.y = j * 60 + 30;
+                
+                //Drawing packman
                 if (board[i][j] === 2) {
-                    
-                    var key_pressed = GetKeyPressed();
-                    if(init == true)
-                    {
-                        key_pressed = 4;
-                        init = false;
-                    }
-                    setPackManParam(key_pressed)
-                    context.beginPath();
-                    context.arc(center.x, center.y, 30, from_big_circle, to_big_circle); // half circle
-                    context.lineTo(center.x, center.y);
-                    context.fillStyle = pac_color; //color
-                    context.fill();
-                    context.beginPath();
-                    context.arc(center.x + eye_center_x, center.y + eye_center_y, 5, 0, 2 * Math.PI); // circle
-                    context.fillStyle = "black"; //color
-                    context.fill();
+                    DrawPacman(center);
+                //Drawing one pointers
                 } else if (board[i][j] === 1) {
-                    context.beginPath();
-                    context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-                    context.fillStyle = "black"; //color
-                    context.fill();
+                  DrawOnePointer(center);
+                  //Drawing walls
                 } else if (board[i][j] === 4) {
-                    context.beginPath();
-                    context.rect(center.x - 30, center.y - 30, 60, 60);
-                    context.fillStyle = "grey"; //color
-                    context.fill();
+                    DrawWall(center);
                 }
             }
         }
