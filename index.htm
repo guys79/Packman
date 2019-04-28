@@ -13,6 +13,7 @@ TIME:
 
 
 <script type="text/javascript">
+
     var context = canvas.getContext("2d");
     var shape = new Object();
     var board;
@@ -21,11 +22,11 @@ TIME:
     var start_time;
     var time_elapsed;
     var interval;
-    var from_big_circle;
-    var to_big_circle;
-    var eye_center_x;
-    var eye_center_y;
-    var init;
+    var from_big_circle;//The start of the pacman circle
+    var to_big_circle;//The end of the pacman circle
+    var eye_center_x;//The x location of the pacman's eye relative to the pacman's center
+    var eye_center_y;//The y location of the pacman's eye relative to the pacman's center
+    var init;//True iff the pacman hasn't been drawn yet
     Start();
 
     function Start() {
@@ -105,6 +106,8 @@ TIME:
             return 4;
         }
     }
+
+    //This fucntioon will set all the parameters that are responsinble for the drawing of the pacman in a certain direction
     function setPackManParam(key_pressed)
     {
         //Down
