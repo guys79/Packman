@@ -32,6 +32,14 @@ TIME:
     var fifty_pointer_is_alive;//True iff the fifty pointer is in the game
     var num_of_rows;//The number of rows in the board
     var num_of_cols;//The number of columns in the board
+    var song_src;//The src of the background song
+    var time_limit = 2;//The time limit of the game
+    //Default values for arrows
+    var up_key = 'ArrowUp';
+    var down_key='ArrowDown';
+    var left_key='ArrowLeft';
+    var right_key='ArrowRight';
+    var interval_time = 100;//The frequency of the intervals
     Start();
 
     function Start() {
@@ -41,8 +49,15 @@ TIME:
         init = true;
         previous_kind_fifty_pointer = 0;
         pac_color = "yellow";
+        song_src = "PacMan.mp3";
+
         
         var food_remain = 50;
+        var point25 = food_remain*0.1;
+        var point15 = food_remain*0.3;
+        var point5 = food_remain - point25 -point15;
+        
+        
         var pacman_remain = 1;
         start_time = new Date();
         num_of_rows = 10;
@@ -50,9 +65,9 @@ TIME:
         var cnt = num_of_cols*num_of_rows;
         var fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
         var fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
-
         var num_of_walls = 5;
         cnt = cnt - num_of_walls;
+    
         
         for (var i = 0; i < num_of_rows; i++) {
             board[i] = new Array();
@@ -88,6 +103,11 @@ TIME:
                 }
             }
         }
+
+        //Starting song
+        var song = new setBackgroundSong(song_src);
+        //song.start();
+
         while (food_remain > 0) {
             var emptyCell = findRandomEmptyCell(board);
             board[emptyCell[0]][emptyCell[1]] = 1;
@@ -100,10 +120,27 @@ TIME:
         addEventListener("keyup", function (e) {
             keysDown[e.code] = false;
         }, false);
-        interval = setInterval(UpdatePosition, 100);
+        interval = setInterval(UpdatePosition, interval_time);
     }
 
 
+    
+    function setBackgroundSong(source)
+{
+    this.source = source;
+    var son;
+    this.son = son;
+    this.start = function()
+    {
+        
+        this.son = document.createElement("embed");
+        this.son.setAttribute("src", this.source);
+        this.son.setAttribute("hidden", "true");
+        this.son.setAttribute("autostart", "true");
+        document.body.appendChild(this.son);
+    }
+        
+    }
     function findRandomEmptyCell(board) {
         var i = Math.floor((Math.random() * 9) + 1);
         var j = Math.floor((Math.random() * 9) + 1);
@@ -118,16 +155,16 @@ TIME:
      * @return {number}
      */
     function GetKeyPressed() {
-        if (keysDown['ArrowUp']) {
+        if (keysDown[up_key]) {
             return 1;
         }
-        if (keysDown['ArrowDown']) {
+        if (keysDown[down_key]) {
             return 2;
         }
-        if (keysDown['ArrowLeft']) {
+        if (keysDown[left_key]) {
             return 3;
         }
-        if (keysDown['ArrowRight']) {
+        if (keysDown[right_key]) {
             return 4;
         }
     }
@@ -265,7 +302,10 @@ TIME:
        
         context.clearRect(0, 0, canvas.width, canvas.height); //clean board
         lblScore.value = score;
-        lblTime.value = time_elapsed;
+        if(time_limit - time_elapsed > interval_time/1000)
+            lblTime.value = time_limit - time_elapsed;
+        else
+            lblTime.value=0;
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
                 var center = new Object();
@@ -381,10 +421,22 @@ TIME:
     if (score >= 500) {
             window.clearInterval(interval);
             window.alert("Game completed");
-        } else {
-            Draw();
+        }
+    else{
+            if(time_elapsed>=time_limit)
+            {
+//                lblTime.value = 0;
+                window.clearInterval(interval);
+                window.alert("Game completed");
+            }
+            else
+            {
+                Draw();
+            }
+            
         }
     }
+
 
     //This function will return true if the fiftypointe is allowed to step on the given kind
     function IsAllowedToFiftyPointer(kind)
