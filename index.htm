@@ -302,7 +302,7 @@ TIME:
        
         context.clearRect(0, 0, canvas.width, canvas.height); //clean board
         lblScore.value = score;
-        if(time_limit - time_elapsed > interval_time/1000)
+        if(time_limit - time_elapsed > 2.0*interval_time/1000)
             lblTime.value = time_limit - time_elapsed;
         else
             lblTime.value=0;
