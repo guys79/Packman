@@ -29,7 +29,9 @@ TIME:
     var init;//True iff the pacman hasn't been drawn yet
     var previous_kind_fifty_pointer;//The kind of object the fifty pointer was at before
     var fifty_pointer_loc = new Object();//The location of the fifty pointer
-    var fifty_pointer_is_alive;
+    var fifty_pointer_is_alive;//True iff the fifty pointer is in the game
+    var num_of_rows;//The number of rows in the board
+    var num_of_cols;//The number of columns in the board
     Start();
 
     function Start() {
@@ -39,24 +41,34 @@ TIME:
         init = true;
         previous_kind_fifty_pointer = 0;
         pac_color = "yellow";
-        var cnt = 100;
+        
         var food_remain = 50;
         var pacman_remain = 1;
         start_time = new Date();
-        for (var i = 0; i < 10; i++) {
+        num_of_rows = 10;
+        num_of_cols =10;
+        var cnt = num_of_cols*num_of_rows;
+        var fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
+        var fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
+
+        var num_of_walls = 5;
+        cnt = cnt - num_of_walls;
+        
+        for (var i = 0; i < num_of_rows; i++) {
             board[i] = new Array();
             //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
-            for (var j = 0; j < 10; j++) {
-                if(i==0 && j==0)
+            for (var j = 0; j < num_of_cols; j++) {
+                if(i==fifty_pointer_loc_x && j==fifty_pointer_loc_y)
                 {
                     board[i][j] = 3;
                     fifty_pointer_loc.i = i;
-                    fifty_pointer_loc.j = j;
+                    fifty_pointer_loc.j = j ;
                 }
                 else
                 {
                     if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
                         board[i][j] = 4;
+                    
                     } 
                     else {
                         var randomNum = Math.random();
@@ -68,7 +80,7 @@ TIME:
                             shape.j = j;
                             pacman_remain--;
                             board[i][j] = 2;
-                        } else {
+                        } else if  (randomNum < 1.0 * (pacman_remain + food_remain+num_of_walls) / cnt) {
                             board[i][j] = 0;
                         }
                         cnt--;
@@ -296,7 +308,23 @@ TIME:
 
     }
     function UpdatePosition() {
-        board[shape.i][shape.j] = 0;
+        if(shape.i>num_of_rows)
+            console.log("fuck1 " + shape.i);
+        if(shape.j>num_of_cols)
+            console.log("fuck2 " + shape.j);
+        if(shape.j<0)
+            console.log("fuck3 " + shape.j);
+        if(shape.i<0)
+            console.log("fuck4 " + shape.i);
+        try{
+            board[shape.i][shape.j] = 0;
+        }
+        catch(error)
+        {
+            console.log("fuck5 " + shape.i+" "+shape.j);
+            board[shape.i][shape.j] = 0;
+          
+        }
         var x = GetKeyPressed();
         //Up
         if (x === 1) {
@@ -327,18 +355,21 @@ TIME:
         //Updating the score
         score = score + GetScore(board[shape.i][shape.j]);
 
-        
-        if( board[shape.i][shape.j] !=3 && fifty_pointer_is_alive)
+        //Normal update
+        if(board[shape.i][shape.j] !=3 && fifty_pointer_is_alive)
         {
             
             board[shape.i][shape.j] = 2;
             UpdateFifftyPointerPosition();
         }
+        //Packman eats fifty pointer
         else
         {
-            fifty_pointer_is_alive = false;
+            
             board[shape.i][shape.j] = 2;
-            score = score + GetScore(previous_kind_fifty_pointer);//Gets the points from the previous kind
+            if(fifty_pointer_is_alive)
+                score = score + GetScore(previous_kind_fifty_pointer);//Gets the points from the previous kind
+            fifty_pointer_is_alive = false;
         }
 
         var currentTime = new Date();
@@ -437,6 +468,11 @@ TIME:
         }    
         previous_kind_fifty_pointer = board[fifty_pointer_loc.i][fifty_pointer_loc.j];
         board[fifty_pointer_loc.i][fifty_pointer_loc.j] = 3;
+
+    }
+
+    function updatePositionRandom(location)
+    {
 
     }
 </script>
