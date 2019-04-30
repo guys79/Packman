@@ -42,7 +42,8 @@ TIME:
     var left_key;//The "left" key
     var right_key;//The "right" key
     var interval_time = 100;//The frequency of the intervals
-
+    var width;
+    var length;
     //Starting the game
     Start();
 
@@ -50,6 +51,12 @@ TIME:
     //It will initialize all the variables and set the interval
     function Start() {
 
+        ShowPoint(6);
+        //DrawGivenPoints(points,center,color)
+        //var c = new Object();
+        //c.x = 150;
+        //c.y = 150;
+        //DrawGivenPoints("+5",c,"black");
         board = new Array();
         score = 0;
         fifty_pointer_is_alive = true;
@@ -79,6 +86,8 @@ TIME:
         //Size of the board
         num_of_rows = 10;
         num_of_cols =10;
+        width = num_of_cols *60;
+        length = num_of_rows *60;
         
         //number of cells
         var cnt = num_of_cols*num_of_rows;
@@ -182,7 +191,7 @@ TIME:
         addEventListener("keyup", function (e) {
             keysDown[e.code] = false;
         }, false);
-        interval = setInterval(UpdatePosition, interval_time);
+      //  interval = setInterval(UpdatePosition, interval_time);
     }
 
     //Thiis functio will set the default keys for moving the pacman
@@ -220,7 +229,47 @@ TIME:
         }
         return [i, j];
     }
+    function ShowPoint(kind)
+    {
+        var obtained_score = GetScore(kind);
+        var score_to_show = "+"+obtained_score;
+        if(obtained_score<0)
+            score_to_show = ""+obtained_score;
+        var interval_container = new Object();
+        interval_container.iter = 0;
+        var center = new Object();
+        center.x = 100;
+        center.y = 100;
+        interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center)},1000)
+       
 
+    }
+    function DisplayMovingDown(score_to_show,interval_container,color,center)
+    {
+        lblScore.value = interval_container.iter;
+        
+       /* if(interval_container.iter>=10)
+        {
+            window.clearInterval(interval_container.interval);
+        }*/
+        interval_container.iter++;
+        center.y = center.y + 100;
+        lblTime.value = center.y;
+        interval_container.iter++;
+        DrawGivenPoints(score_to_show,center,color);
+    }
+
+    function DrawGivenPoints(points,center,color)
+    {
+        
+        context.beginPath();
+        context.text
+        textColor = color;
+        if(textColor == "white")
+            textColor = "black";
+        context.fillStyle = textColor;
+        context.fillText(points.fontsize(20),center.x,center.y);   //fix font size
+    }
     /**
      * @return {number}
      */
@@ -453,6 +502,38 @@ TIME:
         }
     }
 
+    //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the color of it
+    function GetColor(kind)
+    {
+        //Nothing
+        if(kind==0)
+            return "black";
+        //One pointer
+        if(kind == 1)
+        {
+            return "black";
+        }
+        //Fifty pointer
+        if(kind == 3)
+        {
+            return "blue";
+        }
+        //25 pointer
+        if(kind == 6)
+        {
+            return color25;
+        }
+        //15 pointer
+        if(kind == 7)
+        {
+            return color15;
+        }
+        //5 pointer
+        if(kind == 8)
+        {
+            return color5;
+        }
+    }
     //This function will update the position of the pacman and the position of the monster
     function UpdatePosition() {
         board[shape.i][shape.j] = 0;
