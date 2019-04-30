@@ -52,12 +52,12 @@ TIME:
     function Start() {
 
         ShowPoint(6);
-        //DrawGivenPoints(points,center,color)
+        //DrawGivenPoints(points,center,color);
         //var c = new Object();
         //c.x = 150;
         //c.y = 150;
-        //DrawGivenPoints("+5",c,"black");
-        board = new Array();
+        //DrawGivenPoints("+25",c,"black",30);
+        /*board = new Array();
         score = 0;
         fifty_pointer_is_alive = true;
         init = true;
@@ -192,6 +192,7 @@ TIME:
             keysDown[e.code] = false;
         }, false);
       //  interval = setInterval(UpdatePosition, interval_time);
+      */
     }
 
     //Thiis functio will set the default keys for moving the pacman
@@ -240,11 +241,17 @@ TIME:
         var center = new Object();
         center.x = 100;
         center.y = 100;
-        interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center)},1000)
+
+        var size =15 + 15*(score/50) ;
+        if(size<15)
+        {
+            size =15 - 15*(score/50) ;
+        }
+        interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center,size)},1000)
        
 
     }
-    function DisplayMovingDown(score_to_show,interval_container,color,center)
+    function DisplayMovingDown(score_to_show,interval_container,color,center,size)
     {
         lblScore.value = interval_container.iter;
         
@@ -253,22 +260,23 @@ TIME:
             window.clearInterval(interval_container.interval);
         }*/
         interval_container.iter++;
-        center.y = center.y + 100;
+        center.y = center.y + 50;
         lblTime.value = center.y;
         interval_container.iter++;
-        DrawGivenPoints(score_to_show,center,color);
+        DrawGivenPoints(score_to_show,center,color,size);
     }
 
-    function DrawGivenPoints(points,center,color)
+    function DrawGivenPoints(points,center,color,size)
     {
         
         context.beginPath();
-        context.text
+        
+        context.font = size+"px Arial";
         textColor = color;
         if(textColor == "white")
             textColor = "black";
         context.fillStyle = textColor;
-        context.fillText(points.fontsize(20),center.x,center.y);   //fix font size
+        context.fillText(points,center.x,center.y);
     }
     /**
      * @return {number}
