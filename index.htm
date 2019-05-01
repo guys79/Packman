@@ -173,6 +173,9 @@
     TIME:
     <input id="lblTime" type="text"/>
     <br/>
+    LIVES:
+    <input id="lblLives" type="text" />
+    <br />
     <canvas id="canvas" height="600" width="600"></canvas>
     <style>
         #body_game {
@@ -213,22 +216,25 @@
         var down_key;//The "down" key
         var left_key;//The "left" key
         var right_key;//The "right" key
-        var interval_time = 100;//The frequency of the intervals
+        var interval_time = 250;//The frequency of the intervals
         var width;
         var length;
+        var monsterArr=[];
+        var previousMonsterArr=[];
+        var lives_remaining;
+        var numOfMonsters;
         //Starting the game
         Start();
 
         //This function will start the game
         //It will initialize all the variables and set the interval
         function Start() {
-
-            //ShowPoint(3);
-            //DrawGivenPoints(points,center,color);
-            //var c = new Object();
-            //c.x = 150;
-            //c.y = 150;
-            //DrawGivenPoints("+25",c,"black",30);
+            numOfMonsters = 3;
+            for(var i=0; i<numOfMonsters; i++) {
+                monsterArr.push(new Object);
+                previousMonsterArr.push(0);
+            }
+            lives_remaining = 3;
             board = new Array();
             score = 0;
             fifty_pointer_is_alive = true;
@@ -265,12 +271,18 @@
             var cnt = num_of_cols*num_of_rows;
             //number of walls
             var num_of_walls = 5;
-            cnt = cnt - num_of_walls - 1;
+            cnt = cnt - num_of_walls - 1 - numOfMonsters;
 
 
             //Random location of fifty pointer
             var fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
             var fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
+
+            while((fifty_pointer_loc_x == 0 || fifty_pointer_loc_x == num_of_rows-1)&&(fifty_pointer_loc_y == 0 || fifty_pointer_loc_y == num_of_cols-1))
+            {
+                fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
+                fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
+            }
 
             //Creating the board
             for (var i = 0; i < num_of_rows; i++) {
@@ -290,38 +302,55 @@
 
                         }
                         else {
-                            var randomNum = Math.random();
-                            if (randomNum <= 1.0 * food_remain / cnt) {
-
-                                if(randomNum<= 1.0 * point25/food_remain)
-                                {
-                                    board[i][j] = 6;
-                                    point25--;
-                                }
-                                else
-                                {
-                                    if(randomNum<= 1.0 * (point25+point15)/food_remain)
-                                    {
-                                        board[i][j] = 7;
-                                        point15--;
-                                    }
-                                    else
-                                    {
-                                        board[i][j] = 8;
-                                        point5--;
-                                    }
-
-                                }
-                                food_remain--;
-                            } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
-                                shape.i = i;
-                                shape.j = j;
-                                pacman_remain--;
-                                board[i][j] = 2;
-                            } else{
-                                board[i][j] = 0;
+                            if (i == 0 && j == 0) {
+                                monsterArr[i].i = 0;
+                                monsterArr[i].j = 0;
+                                board[i][j] = 5;
                             }
-                            cnt--;
+                            else {
+                                if (i == 9 && j == 0 && numOfMonsters > 1) {
+                                    monsterArr[1].i = 9;
+                                    monsterArr[1].j = 0;
+                                    board[i][j] = 5;
+                                }
+                                else {
+                                    if (i == 0 && j == 9 && numOfMonsters > 2) {
+                                        monsterArr[2].i = 0;
+                                        monsterArr[2].j = 9;
+                                        board[i][j] = 5;
+                                    }
+                                    else {
+                                        var randomNum = Math.random();
+                                        if (randomNum <= 1.0 * food_remain / cnt) {
+
+                                            if (randomNum <= 1.0 * point25 / food_remain) {
+                                                board[i][j] = 6;
+                                                point25--;
+                                            }
+                                            else {
+                                                if (randomNum <= 1.0 * (point25 + point15) / food_remain) {
+                                                    board[i][j] = 7;
+                                                    point15--;
+                                                }
+                                                else {
+                                                    board[i][j] = 8;
+                                                    point5--;
+                                                }
+
+                                            }
+                                            food_remain--;
+                                        } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
+                                            shape.i = i;
+                                            shape.j = j;
+                                            pacman_remain--;
+                                            board[i][j] = 2;
+                                        } else {
+                                            board[i][j] = 0;
+                                        }
+                                    }
+                                    cnt--;
+                                }
+                            }
                         }
                     }
                 }
@@ -408,62 +437,8 @@
             }
             return [i, j];
         }
-        function ShowPoint(kind)
-        {
-            var obtained_score = GetScore(kind);
-            var score_to_show = "+"+obtained_score;
-            if(obtained_score<0)
-                score_to_show = ""+obtained_score;
-            var interval_container = new Object();
-            interval_container.iter = 1;
-            var center = new Object();
-            center.x = 100;
-            center.y = 100;
-            center.prevx = 100;
-            center.prevy = 100;
 
 
-            var size =15 + 15*(obtained_score/50) ;
-            if(size<15)
-            {
-                size =15 - 15*(obtained_score/50) ;
-            }
-            interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center,size)},1000)
-
-
-        }
-        function DisplayMovingDown(score_to_show,interval_container,color,center,size)
-        {
-            lblScore.value = interval_container.iter;
-
-            if(interval_container.iter>=5)
-            {
-                context.beginPath();
-                context.clearRect(center.x,center.y-23,50,40);
-                window.clearInterval(interval_container.interval);
-            }
-
-            center.prevx = center.x;
-            center.prevy = center.y;
-            center.y = center.y + 50;
-
-            lblTime.value = center.y;
-            interval_container.iter++;
-            DrawGivenPoints(score_to_show,center,color,size);
-        }
-
-        function DrawGivenPoints(points,center,color,size)
-        {
-            context.beginPath();
-            context.clearRect(center.prevx,center.prevy-23,50,40);
-            context.beginPath();
-            context.font = size+"px Arial";
-            var textColor = color;
-            if(textColor == "white")
-                textColor = "black";
-            context.fillStyle = textColor;
-            context.fillText(points,center.x,center.y);
-        }
         /**
          * @return {number}
          */
@@ -536,6 +511,20 @@
 
 
         }
+
+        function DrawMonster(center) {
+
+
+            var monster_color = "yellow";
+            //Creating the outer circle
+            context.beginPath();
+            context.arc(center.x, center.y, 30, 0, 2 * Math.PI);
+            context.fillStyle = monster_color;
+            context.fill();
+
+        }
+
+
         //This function will draw the fifty pointer monster
         function DrawFiftyPointer(center)
         {
@@ -625,8 +614,15 @@
         function Draw() {
 
             context.clearRect(0, 0, canvas.width, canvas.height); //clean board
+            if(!Number.isInteger(score))
+            {
+                var g=0;
+            }
+
             lblScore.value = score;
             lblTime.value = Math.floor((time_limit-time_elapsed)*10)/10.0;
+            lblLives.value = lives_remaining;
+
             for (var i = 0; i < 10; i++) {
                 for (var j = 0; j < 10; j++) {
                     var center = new Object();
@@ -648,6 +644,9 @@
                     }
                     else if (board[i][j] === 3) {//Drawing fifty pointer
                         DrawFiftyPointer(center);
+                    }
+                    else if (board[i][j] === 5) {//Drawing monster
+                        DrawMonster(center);
                     }
                     else if (board[i][j] === 6) {//Drawing 25 pointer
                         Draw25(center);
@@ -678,6 +677,11 @@
             if(kind == 3)
             {
                 return 50;
+            }
+            //Monster
+            if(kind == 5)
+            {
+                return 0;
             }
             //25 pointer
             if(kind == 6)
@@ -778,6 +782,33 @@
                 fifty_pointer_is_alive = false;
             }
 
+
+            var monster_loc;
+            for(var i=0;i<monsterArr.length;i++){
+                monster_loc=monsterArr[i];
+                if(board[shape.i][shape.j] != 5){
+                    board[shape.i][shape.j] = 2;
+                    var hasBeenEaten=updateMonsterPossition(monster_loc,i);
+                    if(hasBeenEaten){
+                        score=score -10;
+                        if(hasBeenEaten){
+                            board[monster_loc.i][monster_loc.j]=previousMonsterArr[i];
+                            monster_loc.i=0;
+                            monster_loc.j=0;
+                            board[0][0]=5;
+                            var emptyCell = findRandomEmptyCell(board);
+                            board[shape.i][shape.j] = 0;
+                            shape.i = emptyCell[0];
+                            shape.j = emptyCell[1];
+                            board[shape.i][shape.j] = 2;
+                            lives_remaining--;
+
+                        }
+                    }
+                }
+            }
+
+
             var currentTime = new Date();
             time_elapsed = (currentTime - start_time) / 1000;
             if (score >= 20 && time_elapsed <= 10) {
@@ -807,7 +838,7 @@
         //This function will return true if the fiftypointe is allowed to step on the given kind
         function IsAllowedToFiftyPointer(kind)
         {
-            return kind!=2 && kind!=4 ;
+            return kind!=2 && kind!=4 && kind!=5;
         }
 
         //This function will update the position of the fifty pointer
@@ -933,6 +964,114 @@
             context.fillStyle = textColor;
             context.fillText("5",center.x-3,center.y+4);
 
+        }
+
+
+        function moveVertical(monster_loc){
+            //down
+            if(monster_loc.j-shape.j<0){
+                monster_loc.j++;
+            }
+            //up
+            else{
+                monster_loc.j--;
+            }
+        }
+        function moveHorizontal(monster_loc){
+            //right
+            if(monster_loc.i-shape.i<0){
+                monster_loc.i++;
+            }
+            //left
+            else{
+                monster_loc.i--;
+            }
+        }
+
+        function canMoveVertical(monster_loc){
+            if(monster_loc.j-shape.j<0 ){
+                return monster_loc.j < 9 && IsAllowedToMonster(board[monster_loc.i][monster_loc.j + 1]);
+            }
+            return monster_loc.j > 0 && IsAllowedToMonster(board[monster_loc.i][monster_loc.j - 1]);
+        }
+
+        function canMoveHorizontal(monster_loc){
+            if(monster_loc.i-shape.i<0){
+                return monster_loc.i < 9 && IsAllowedToMonster(board[monster_loc.i + 1][monster_loc.j]);
+            }
+            return monster_loc.i > 0 && IsAllowedToMonster(board[monster_loc.i - 1][monster_loc.j])
+        }
+
+
+        //This function will return true if the monster is allowed to step on the given kind
+        function IsAllowedToMonster(kind) {
+            return kind != 2 && kind != 4 && kind!=3 && kind!=5;
+        }
+
+        function canEat(monster_loc){
+            if((monster_loc.j-shape.j==0&&monster_loc.i-shape.i==1)||(monster_loc.j-shape.j==0&&monster_loc.i-shape.i==-1)
+                ||(monster_loc.i-shape.i==0&&monster_loc.j-shape.j==1)||(monster_loc.i-shape.i==0&&monster_loc.j-shape.j==-1)){
+                return true;
+            }
+            return false;
+        }
+
+        function updateMonsterPossition(monster_loc,index){
+            var ifNeedToUpdate=canEat(monster_loc);
+            if(ifNeedToUpdate){
+                return true;
+            }
+            board[monster_loc.i][monster_loc.j]=previousMonsterArr[index];
+            var moved=false;
+            if(monster_loc.j-shape.j==0){
+                if(canMoveHorizontal(monster_loc)){
+                    moveHorizontal(monster_loc);
+                    moved=true;
+                }
+            }
+            if(monster_loc.i-shape.i==0&&canMoveVertical(monster_loc)){
+                moveVertical(monster_loc);
+                moved=true;
+            }
+            var rand=Math.floor(Math.random() * 10) + 1;
+            if(rand<6&&canMoveVertical(monster_loc)&&!moved){
+                moveVertical(monster_loc);
+                moved=true;
+            }
+            else{
+                if(canMoveHorizontal(monster_loc)&&!moved){
+                    moveHorizontal(monster_loc);
+                    moved=true;
+                }
+            }
+            if(!moved){
+                //Up
+                if (monster_loc.j > 0 && IsAllowedToMonster(board[monster_loc.i][monster_loc.j   - 1])) {
+                    monster_loc.j--;
+                    moved=true;
+                }
+
+                //Down
+                if (!moved && monster_loc.j < 9 && IsAllowedToMonster(board[monster_loc.i][monster_loc.j + 1])) {
+                    monster_loc.j++;
+                    moved=true;
+                }
+
+                //Left
+                if (!moved && monster_loc.i > 0 && IsAllowedToMonster(board[monster_loc.i - 1][monster_loc.j])) {
+                    monster_loc.i--;
+                    moved=true;
+                }
+
+                //Right
+                if (!moved && monster_loc.i < 9 && IsAllowedToMonster(board[monster_loc.i + 1][monster_loc.j])) {
+                    monster_loc.i++;
+                    moved=true;
+                }
+            }
+            previousMonsterArr[index]=board[monster_loc.i][monster_loc.j];
+            board[monster_loc.i][monster_loc.j]=5;
+            return false;
         }
     </script>
 
