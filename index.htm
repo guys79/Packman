@@ -2,711 +2,874 @@
 <html>
 
 <head>
+<title>Guy and Jonathan's Pacman</title>
+
+
+    <script type="text/javascript">
+
+        window.addEventListener("load",Initialize);
+        function GoTo(section_name)
+        {
+
+
+            var menu_extension = "_menu";
+            var select_color = "#336b87";
+            var regular_background_color = "#90afc5";
+
+
+            var game = document.getElementById('game');
+            game.style.display = "none";
+            var game_menu = document.getElementById('game' +menu_extension);
+            game_menu.style.backgroundColor = regular_background_color;
+
+
+            var welcome = document.getElementById('welcome');
+            welcome.style.display = "none";
+            var welcome_menu = document.getElementById('welcome' +menu_extension);
+            welcome_menu.style.backgroundColor = regular_background_color;
+
+            var signup = document.getElementById('signup');
+            signup.style.display = "none";
+            var signup_menu = document.getElementById('signup' +menu_extension);
+            signup_menu.style.backgroundColor = regular_background_color;
+
+            var login = document.getElementById('login');
+            login.style.display = "none";
+            var login_menu = document.getElementById('login' +menu_extension);
+            login_menu.style.backgroundColor = regular_background_color;
+
+            var settings = document.getElementById('settings');
+            settings.style.display = "none";
+            var settings_menu = document.getElementById('settings' +menu_extension);
+            settings_menu.style.backgroundColor = regular_background_color;
+
+            var about = document.getElementById('about');
+            about.style.display = "none";
+            var about_menu = document.getElementById('about' +menu_extension);
+            about_menu.style.backgroundColor = regular_background_color;
+
+
+            var go_to = document.getElementById(section_name);
+            go_to.style.display = "block";
+            var menu_go_to = document.getElementById(section_name+menu_extension);
+            menu_go_to.style.backgroundColor = select_color;
+
+            var html = document.getElementsByTagName("html");
+
+            document.body.style.backgroundImage = "url('background.jpg')";
+            if(section_name == "game")
+            {
+                document.body.style.backgroundImage = "url('background_game.jpg')";
+            }
+
+
+        }
+        function Initialize()
+        {
+            var game = document.getElementById('game_menu');
+            //game.hidden = true;
+
+            var starting_page = 'welcome';
+            GoTo(starting_page);
+
+        }
+    </script>
 
 </head>
 
-<body>SCORE:
-<input id="lblScore" type="text"/>
-<br/>
-TIME:
-<input id="lblTime" type="text"/>
-<br/>
-<canvas id="canvas" height="600" width="600"></canvas>
-<section id="welcome"></section>
-<section id="signin"></section>
-<section id="login"></section>
-<section id="settings"></section>
-<section id="about"></section>
+<body id="body" >
+
+<style>
+    #body {
+        background: url('background.jpg') no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        image-rendering: optimizeQuality;
+    }
+    ul {
+        list-style-type: none; /*Get the dots off*/
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+        background-color: #90afc5;
+    }
+
+    li {
+        float: left;
+    }
+
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+    }
+
+
+</style>
+<ul>
+    <li id="welcome_menu" onclick="GoTo('welcome')"><a>Welcome</a></li>
+    <li id="signup_menu" onclick="GoTo('signup')"><a>Sign Up</a></li>
+    <li id="login_menu" onclick="GoTo('login')"><a>Login</a></li>
+    <li id="settings_menu" onclick="GoTo('settings')"><a>Settings</a></li>
+    <li id="about_menu" onclick="GoTo('about')"><a>About</a></li>
+    <li id = "game_menu" onclick="GoTo('game')"><a>Game</a></li>
+</ul>
+<section id="welcome" display="none" >
+    <style>
+        .btn
+        {
+            width: 100%;
+            display: inline-block;
+            margin-bottom: 1%;
+            padding: 20px 0px;
+            text-align: center;
+            color: white;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            position: relative;
+            background: linear-gradient(-45deg,#336b87,#90afc5);
+
+
+        }
+
+        #welcome_div
+        {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+
+        }
+    </style>
+    <div id ="welcome_div">
+        <input type="button" id="welcome_signup" class="btn" value="Sign Up" onclick="GoTo('signup')">
+        <input type="button" id="welcome_login" class="btn" value="Login" onclick="GoTo('login')">
+    </div>
 
 
 
 
-<script type="text/javascript">
-
-    var context = canvas.getContext("2d");
-    var shape = new Object();//The location of the pacman on the board
-    var board;//The playing board
-    var score;//The current score
-    var pac_color;//The pacman's color
-    var start_time;//The starting time
-    var time_elapsed;//The time elapsed since the start of the game
-    var interval;//The interval
-    var color25;//The color of the 25 pointer
-    var color15;//The color of the 15 pointer
-    var color5;//The color of the 5 pointer
-    var from_big_circle;//The start of the pacman circle
-    var to_big_circle;//The end of the pacman circle
-    var eye_center_x;//The x location of the pacman's eye relative to the pacman's center
-    var eye_center_y;//The y location of the pacman's eye relative to the pacman's center
-    var init;//True iff the pacman hasn't been drawn yet
-    var previous_kind_fifty_pointer;//The kind of object the fifty pointer was at before
-    var fifty_pointer_loc = new Object();//The location of the fifty pointer
-    var fifty_pointer_is_alive;//True iff the fifty pointer is in the game
-    var num_of_rows;//The number of rows in the board
-    var num_of_cols;//The number of columns in the board
-    var song_src;//The src of the background song
-    var time_limit = 200;//The time limit of the game
-    var up_key;//The "up" key
-    var down_key;//The "down" key
-    var left_key;//The "left" key
-    var right_key;//The "right" key
-    var interval_time = 100;//The frequency of the intervals
-    var width;
-    var length;
-    //Starting the game
-    Start();
-
-    //This function will start the game
-    //It will initialize all the variables and set the interval
-    function Start() {
-
-        //ShowPoint(3);
-        //DrawGivenPoints(points,center,color);
-        //var c = new Object();
-        //c.x = 150;
-        //c.y = 150;
-        //DrawGivenPoints("+25",c,"black",30);
-        board = new Array();
-        score = 0;
-        fifty_pointer_is_alive = true;
-        init = true;
-        previous_kind_fifty_pointer = 0;
-        pac_color = "yellow";
-        song_src = "PacMan.mp3";
-
-        //For now
-        color5 = "red";
-        color15 = "orange";
-        color25 = "yellow";
+</section>
+<section id="signup" display="none"></section>
+<section id="login" display="none"></section>
+<section id="settings" display="none"></section>
+<section id="about" display="none"></section>
 
 
-        //Set the default keys
-        setDefaultKeys();
-
-        //Number of food
-        var food_remain = 50;
-        var point25 = Math.floor(food_remain*0.1);
-        var point15 = Math.floor(food_remain*0.3);
-        var point5 = food_remain - point25 -point15;
-        
-        var pacman_remain = 1;
-        start_time = new Date();
-
-        //Size of the board
-        num_of_rows = 10;
-        num_of_cols =10;
-        width = num_of_cols *60;
-        length = num_of_rows *60;
-        
-        //number of cells
-        var cnt = num_of_cols*num_of_rows;
-        //number of walls
-        var num_of_walls = 5;
-        cnt = cnt - num_of_walls - 1;
 
 
-        //Random location of fifty pointer
-        var fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
-        var fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
+</body>
+<body id="body_game">
 
-        //Creating the board
-        for (var i = 0; i < num_of_rows; i++) {
-            board[i] = new Array();
-            //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
-            for (var j = 0; j < num_of_cols; j++) {
-                if(i==fifty_pointer_loc_x && j==fifty_pointer_loc_y)
-                {
-                    board[i][j] = 3;
-                    fifty_pointer_loc.i = i;
-                    fifty_pointer_loc.j = j ;
-                }
-                else
-                {
-                    if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
-                        board[i][j] = 4;
-                    
-                    } 
-                    else {
-                        var randomNum = Math.random();
-                        if (randomNum <= 1.0 * food_remain / cnt) {
-                            
-                            if(randomNum<= 1.0 * point25/food_remain)
-                            {
+<section id="game" display="none" >
+    SCORE:
+    <input id="lblScore" type="text"/>
+    <br/>
+    TIME:
+    <input id="lblTime" type="text"/>
+    <br/>
+    <canvas id="canvas" height="600" width="600"></canvas>
+    <style>
+        #body_game {
+            background: url('background.jpg') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            image-rendering: optimizeQuality;
+        }
+    </style>
+    <script type="text/javascript">
+
+        var context = canvas.getContext("2d");
+        var shape = new Object();//The location of the pacman on the board
+        var board;//The playing board
+        var score;//The current score
+        var pac_color;//The pacman's color
+        var start_time;//The starting time
+        var time_elapsed;//The time elapsed since the start of the game
+        var interval;//The interval
+        var color25;//The color of the 25 pointer
+        var color15;//The color of the 15 pointer
+        var color5;//The color of the 5 pointer
+        var from_big_circle;//The start of the pacman circle
+        var to_big_circle;//The end of the pacman circle
+        var eye_center_x;//The x location of the pacman's eye relative to the pacman's center
+        var eye_center_y;//The y location of the pacman's eye relative to the pacman's center
+        var init;//True iff the pacman hasn't been drawn yet
+        var previous_kind_fifty_pointer;//The kind of object the fifty pointer was at before
+        var fifty_pointer_loc = new Object();//The location of the fifty pointer
+        var fifty_pointer_is_alive;//True iff the fifty pointer is in the game
+        var num_of_rows;//The number of rows in the board
+        var num_of_cols;//The number of columns in the board
+        var song_src;//The src of the background song
+        var time_limit = 200;//The time limit of the game
+        var up_key;//The "up" key
+        var down_key;//The "down" key
+        var left_key;//The "left" key
+        var right_key;//The "right" key
+        var interval_time = 100;//The frequency of the intervals
+        var width;
+        var length;
+        //Starting the game
+        Start();
+
+        //This function will start the game
+        //It will initialize all the variables and set the interval
+        function Start() {
+
+            //ShowPoint(3);
+            //DrawGivenPoints(points,center,color);
+            //var c = new Object();
+            //c.x = 150;
+            //c.y = 150;
+            //DrawGivenPoints("+25",c,"black",30);
+            board = new Array();
+            score = 0;
+            fifty_pointer_is_alive = true;
+            init = true;
+            previous_kind_fifty_pointer = 0;
+            pac_color = "yellow";
+            song_src = "PacMan.mp3";
+
+            //For now
+            color5 = "red";
+            color15 = "orange";
+            color25 = "yellow";
+
+
+            //Set the default keys
+            setDefaultKeys();
+
+            //Number of food
+            var food_remain = 50;
+            var point25 = Math.floor(food_remain*0.1);
+            var point15 = Math.floor(food_remain*0.3);
+            var point5 = food_remain - point25 -point15;
+
+            var pacman_remain = 1;
+            start_time = new Date();
+
+            //Size of the board
+            num_of_rows = 10;
+            num_of_cols =10;
+            width = num_of_cols *60;
+            length = num_of_rows *60;
+
+            //number of cells
+            var cnt = num_of_cols*num_of_rows;
+            //number of walls
+            var num_of_walls = 5;
+            cnt = cnt - num_of_walls - 1;
+
+
+            //Random location of fifty pointer
+            var fifty_pointer_loc_x = Math.floor(Math.random()*num_of_rows);
+            var fifty_pointer_loc_y = Math.floor(Math.random()*num_of_cols);
+
+            //Creating the board
+            for (var i = 0; i < num_of_rows; i++) {
+                board[i] = new Array();
+                //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
+                for (var j = 0; j < num_of_cols; j++) {
+                    if(i==fifty_pointer_loc_x && j==fifty_pointer_loc_y)
+                    {
+                        board[i][j] = 3;
+                        fifty_pointer_loc.i = i;
+                        fifty_pointer_loc.j = j ;
+                    }
+                    else
+                    {
+                        if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
+                            board[i][j] = 4;
+
+                        }
+                        else {
+                            var randomNum = Math.random();
+                            if (randomNum <= 1.0 * food_remain / cnt) {
+
+                                if(randomNum<= 1.0 * point25/food_remain)
+                                {
                                     board[i][j] = 6;
                                     point25--;
-                            }
-                            else
-                            {
-                                if(randomNum<= 1.0 * (point25+point15)/food_remain)
-                                {
-                                    board[i][j] = 7;
-                                    point15--;
                                 }
                                 else
                                 {
-                                    board[i][j] = 8;
-                                    point5--;
+                                    if(randomNum<= 1.0 * (point25+point15)/food_remain)
+                                    {
+                                        board[i][j] = 7;
+                                        point15--;
+                                    }
+                                    else
+                                    {
+                                        board[i][j] = 8;
+                                        point5--;
+                                    }
+
                                 }
-                                
+                                food_remain--;
+                            } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
+                                shape.i = i;
+                                shape.j = j;
+                                pacman_remain--;
+                                board[i][j] = 2;
+                            } else{
+                                board[i][j] = 0;
                             }
-                            food_remain--;
-                        } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
-                            shape.i = i;
-                            shape.j = j;
-                            pacman_remain--;
-                            board[i][j] = 2;
-                        } else{
-                            board[i][j] = 0;
+                            cnt--;
                         }
-                        cnt--;
                     }
                 }
             }
-        }
 
-        //Starting song
-        var song = new setBackgroundSong(song_src);
-        //song.start();
+            //Starting song
+            var song = new setBackgroundSong(song_src);
+            //song.start();
 
-        //If food still remains
-        if (food_remain > 0) {
-            
-            while(point25>0)
-            {
-                food_remain--;
-                point25--;
-                var emptyCell = findRandomEmptyCell(board);
-                board[emptyCell[0]][emptyCell[1]] = 6;
+            //If food still remains
+            if (food_remain > 0) {
+
+                while(point25>0)
+                {
+                    food_remain--;
+                    point25--;
+                    var emptyCell = findRandomEmptyCell(board);
+                    board[emptyCell[0]][emptyCell[1]] = 6;
+                }
+                while(point15>0)
+                {
+                    food_remain--;
+                    point25--;
+                    var emptyCell = findRandomEmptyCell(board);
+                    board[emptyCell[0]][emptyCell[1]] = 7;
+                }
+                while(point5>0)
+                {
+                    food_remain--;
+                    point25--;
+                    var emptyCell = findRandomEmptyCell(board);
+                    board[emptyCell[0]][emptyCell[1]] = 8;
+                }
+
             }
-            while(point15>0)
+            //Setting listeners and interval
+            keysDown = {};
+            addEventListener("keydown", function (e) {
+                keysDown[e.code] = true;
+            }, false);
+            addEventListener("keyup", function (e) {
+                keysDown[e.code] = false;
+            }, false);
+            interval = setInterval(UpdatePosition, interval_time);
+
+        }
+
+        //Thiis functio will set the default keys for moving the pacman
+        function setDefaultKeys()
+        {
+            up_key = 'ArrowUp';
+            down_key='ArrowDown';
+            left_key='ArrowLeft';
+            right_key='ArrowRight';
+        }
+        //This function will set the bakground song
+        function setBackgroundSong(source)
+        {
+            this.source = source;
+            var son;
+            this.son = son;
+            this.start = function()
             {
-                food_remain--;
-                point25--;
-                var emptyCell = findRandomEmptyCell(board);
-                board[emptyCell[0]][emptyCell[1]] = 7;
+
+                this.son = document.createElement("embed");
+                this.son.setAttribute("src", this.source);
+                this.son.setAttribute("hidden", "true");
+                this.son.setAttribute("autostart", "true");
+                document.body.appendChild(this.son);
             }
-            while(point5>0)
+            this.stop = function()
             {
-                food_remain--;
-                point25--;
-                var emptyCell = findRandomEmptyCell(board);
-                board[emptyCell[0]][emptyCell[1]] = 8;
+                document.body.removeChild(this.son);
             }
-            
-        }
-        //Setting listeners and interval
-        keysDown = {};
-        addEventListener("keydown", function (e) {
-            keysDown[e.code] = true;
-        }, false);
-        addEventListener("keyup", function (e) {
-            keysDown[e.code] = false;
-        }, false);
-        interval = setInterval(UpdatePosition, interval_time);
-      
-    }
 
-    //Thiis functio will set the default keys for moving the pacman
-    function setDefaultKeys()
-    {
-        up_key = 'ArrowUp';
-        down_key='ArrowDown';
-        left_key='ArrowLeft';
-        right_key='ArrowRight';
-    }
-    //This function will set the bakground song
-    function setBackgroundSong(source)
-    {
-        this.source = source;
-        var son;
-        this.son = son;
-        this.start = function()
+        }
+        //This function finds empty cell in the board
+        function findRandomEmptyCell(board) {
+            var i = Math.floor((Math.random() * 9) + 1);
+            var j = Math.floor((Math.random() * 9) + 1);
+            while (board[i][j] !== 0) {
+                i = Math.floor((Math.random() * 9) + 1);
+                j = Math.floor((Math.random() * 9) + 1);
+            }
+            return [i, j];
+        }
+        function ShowPoint(kind)
         {
-        
-            this.son = document.createElement("embed");
-            this.son.setAttribute("src", this.source);
-            this.son.setAttribute("hidden", "true");
-            this.son.setAttribute("autostart", "true");
-            document.body.appendChild(this.son);
+            var obtained_score = GetScore(kind);
+            var score_to_show = "+"+obtained_score;
+            if(obtained_score<0)
+                score_to_show = ""+obtained_score;
+            var interval_container = new Object();
+            interval_container.iter = 1;
+            var center = new Object();
+            center.x = 100;
+            center.y = 100;
+            center.prevx = 100;
+            center.prevy = 100;
+
+
+            var size =15 + 15*(obtained_score/50) ;
+            if(size<15)
+            {
+                size =15 - 15*(obtained_score/50) ;
+            }
+            interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center,size)},1000)
+
+
         }
-        this.stop = function()
+        function DisplayMovingDown(score_to_show,interval_container,color,center,size)
         {
-            document.body.removeChild(this.son);
-        }
-            
-    }
-    //This function finds empty cell in the board
-    function findRandomEmptyCell(board) {
-        var i = Math.floor((Math.random() * 9) + 1);
-        var j = Math.floor((Math.random() * 9) + 1);
-        while (board[i][j] !== 0) {
-            i = Math.floor((Math.random() * 9) + 1);
-            j = Math.floor((Math.random() * 9) + 1);
-        }
-        return [i, j];
-    }
-    function ShowPoint(kind)
-    {
-        var obtained_score = GetScore(kind);
-        var score_to_show = "+"+obtained_score;
-        if(obtained_score<0)
-            score_to_show = ""+obtained_score;
-        var interval_container = new Object();
-        interval_container.iter = 1;
-        var center = new Object();
-        center.x = 100;
-        center.y = 100;
-        center.prevx = 100;
-        center.prevy = 100;
+            lblScore.value = interval_container.iter;
 
+            if(interval_container.iter>=5)
+            {
+                context.beginPath();
+                context.clearRect(center.x,center.y-23,50,40);
+                window.clearInterval(interval_container.interval);
+            }
 
-        var size =15 + 15*(obtained_score/50) ;
-        if(size<15)
-        {
-            size =15 - 15*(obtained_score/50) ;
+            center.prevx = center.x;
+            center.prevy = center.y;
+            center.y = center.y + 50;
+
+            lblTime.value = center.y;
+            interval_container.iter++;
+            DrawGivenPoints(score_to_show,center,color,size);
         }
-        interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center,size)},1000)
-       
 
-    }
-    function DisplayMovingDown(score_to_show,interval_container,color,center,size)
-    {
-        lblScore.value = interval_container.iter;
-        
-        if(interval_container.iter>=5)
+        function DrawGivenPoints(points,center,color,size)
         {
             context.beginPath();
-            context.clearRect(center.x,center.y-23,50,40);
-            window.clearInterval(interval_container.interval);
+            context.clearRect(center.prevx,center.prevy-23,50,40);
+            context.beginPath();
+            context.font = size+"px Arial";
+            var textColor = color;
+            if(textColor == "white")
+                textColor = "black";
+            context.fillStyle = textColor;
+            context.fillText(points,center.x,center.y);
         }
-        
-        center.prevx = center.x;
-        center.prevy = center.y;
-        center.y = center.y + 50;
+        /**
+         * @return {number}
+         */
+        function GetKeyPressed() {
+            if (keysDown[up_key]) {
+                return 1;
+            }
+            if (keysDown[down_key]) {
+                return 2;
+            }
+            if (keysDown[left_key]) {
+                return 3;
+            }
+            if (keysDown[right_key]) {
+                return 4;
+            }
+        }
 
-        lblTime.value = center.y;
-        interval_container.iter++;
-        DrawGivenPoints(score_to_show,center,color,size);
-    }
-
-    function DrawGivenPoints(points,center,color,size)
-    {
-        context.beginPath();
-        context.clearRect(center.prevx,center.prevy-23,50,40);
-        context.beginPath();
-        context.font = size+"px Arial";
-        textColor = color;
-        if(textColor == "white")
-            textColor = "black";
-        context.fillStyle = textColor;
-        context.fillText(points,center.x,center.y);
-    }
-    /**
-     * @return {number}
-     */
-    function GetKeyPressed() {
-        if (keysDown[up_key]) {
-            return 1;
-        }
-        if (keysDown[down_key]) {
-            return 2;
-        }
-        if (keysDown[left_key]) {
-            return 3;
-        }
-        if (keysDown[right_key]) {
-            return 4;
-        }
-    }
-
-    //TYhis function will get the direction that the pacman is facing and will set the parameters of the packman so
-    //that once drawn, the pacman will look at the given direction.
-    function SetPackManParam(key_pressed)
-    {
-        //Down
-        if(key_pressed==2)
+        //TYhis function will get the direction that the pacman is facing and will set the parameters of the packman so
+        //that once drawn, the pacman will look at the given direction.
+        function SetPackManParam(key_pressed)
         {
-            
-            from_big_circle= 0.65 * Math.PI;
-            to_big_circle = 0.35 * Math.PI;
-            eye_center_y = 5;
-            eye_center_x= 15;
-            pac_color = "red";
-        }
-        else
-        {
-
-            //Left      
-            if(key_pressed==3)
+            //Down
+            if(key_pressed==2)
             {
-                from_big_circle= 1.15 * Math.PI;
-                to_big_circle = 0.85 * Math.PI;
-                eye_center_x = -5;
-                eye_center_y = -15;
-                pac_color = "green";
+
+                from_big_circle= 0.65 * Math.PI;
+                to_big_circle = 0.35 * Math.PI;
+                eye_center_y = 5;
+                eye_center_x= 15;
+                pac_color = "red";
             }
             else
             {
-                //Up
-                if(key_pressed==1)
+
+                //Left
+                if(key_pressed==3)
                 {
-                    from_big_circle= 1.65 * Math.PI;
-                    to_big_circle = 1.35 * Math.PI;
-                    eye_center_y = -5;
-                    eye_center_x = -15;
-                    pac_color = "blue";
+                    from_big_circle= 1.15 * Math.PI;
+                    to_big_circle = 0.85 * Math.PI;
+                    eye_center_x = -5;
+                    eye_center_y = -15;
+                    pac_color = "green";
                 }
                 else
                 {
-                    //Right
-                    if(key_pressed==4)
+                    //Up
+                    if(key_pressed==1)
                     {
-                        from_big_circle= 0.15 * Math.PI;
-                        to_big_circle = 1.85 * Math.PI;
-                        eye_center_x = 5;
-                        eye_center_y=-15;
-                        pac_color = "pink";
+                        from_big_circle= 1.65 * Math.PI;
+                        to_big_circle = 1.35 * Math.PI;
+                        eye_center_y = -5;
+                        eye_center_x = -15;
+                        pac_color = "blue";
+                    }
+                    else
+                    {
+                        //Right
+                        if(key_pressed==4)
+                        {
+                            from_big_circle= 0.15 * Math.PI;
+                            to_big_circle = 1.85 * Math.PI;
+                            eye_center_x = 5;
+                            eye_center_y=-15;
+                            pac_color = "pink";
+                        }
                     }
                 }
             }
-        }
-
-                    
-    }
-    //This function will draw the fifty pointer monster
-    function DrawFiftyPointer(center)
-    {
-        var inside_color = "yellow";
-        var level_one_color = "red";
-        var level_two_color = "blue";
-        var level_three_color = "black";
-        var level_four_color = "grey";
-
-        //Creating the outer circle
-        context.beginPath();
-        context.arc(center.x, center.y, 30,0, 2 * Math.PI);
-        context.fillStyle = level_four_color;
-        context.fill();
-
-        //Creting the level three circle
-        context.beginPath();
-        context.arc(center.x, center.y, 24,0, 2 * Math.PI);
-        context.fillStyle = level_three_color;
-        context.fill();
-
-        //Creting the level two circle
-        context.beginPath();
-        context.arc(center.x, center.y, 18,0, 2 * Math.PI);
-        context.fillStyle = level_two_color;
-        context.fill();
-
-        //Creting the level one circle
-        context.beginPath();
-        context.arc(center.x, center.y, 12,0, 2 * Math.PI);
-        context.fillStyle = level_one_color;
-        context.fill();
-        
-        //Creting the inside circle
-        context.beginPath();
-        context.arc(center.x, center.y, 6,0, 2 * Math.PI);
-        context.fillStyle = inside_color;
-        context.fill();
-    }
-    //This function recieves the center of the pacman and will draw it
-    function DrawPacman(center)
-    {
-        var key_pressed = GetKeyPressed();
-        if(init == true)
-        {
-            key_pressed = 4;
-            init = false;
-        }
-        SetPackManParam(key_pressed)
-        context.beginPath();
-        context.arc(center.x, center.y, 30, from_big_circle, to_big_circle); // half circle
-        context.lineTo(center.x, center.y);
-        context.fillStyle = pac_color; //color
-        context.fill();
-        
-        context.beginPath();
-        context.arc(center.x + eye_center_x, center.y + eye_center_y, 5, 0, 2 * Math.PI); // circle
-        context.fillStyle = "black"; //color
-        context.fill();
-    }
-    //This function recieves the center of the one pointer and will draw it
-    function DrawOnePointer(center)
-    {
-        context.beginPath();
-        context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-        context.fillStyle = "black"; //color
-        context.fill();
-    }
-
-    //This function recieves the center of a wall and will draw it
-    function DrawWall(center)
-    {
-        context.beginPath();
-        context.rect(center.x - 30, center.y - 30, 60, 60);
-        context.fillStyle = "grey"; //color
-        context.fill();
-    }
-    //This function will draw the background of the board
-    function DrawBackground(center)
-    {
-        context.beginPath();
-        context.rect(center.x - 30, center.y - 30, 60, 60);
-        context.fillStyle ="#7BCCB5"; //color
-        context.fill();
-    }
-    //This function will draw the board
-    function Draw() {
-       
-        context.clearRect(0, 0, canvas.width, canvas.height); //clean board
-        lblScore.value = score;
-        lblTime.value = Math.floor((time_limit-time_elapsed)*10)/10.0;
-        for (var i = 0; i < 10; i++) {
-            for (var j = 0; j < 10; j++) {
-                var center = new Object();
-                center.x = i * 60 + 30;
-                center.y = j * 60 + 30;
-                
-
-                //Drawing background
-                DrawBackground(center);
-                //Drawing packman
-                if (board[i][j] === 2) {
-                    DrawPacman(center);
-                } else if (board[i][j] === 1) {//Drawing one pointers
-                  //DrawOnePointer(center);
-                  Draw5(center);
-                  
-                } else if (board[i][j] === 4) {//Drawing walls
-                    DrawWall(center);
-                }
-                else if (board[i][j] === 3) {//Drawing fifty pointer
-                    DrawFiftyPointer(center);
-                }
-                else if (board[i][j] === 6) {//Drawing 25 pointer
-                    Draw25(center);
-                }
-                else if (board[i][j] === 7) {//Drawing 15 pointer
-                    Draw15(center);
-                }
-                else if (board[i][j] === 8) {//Drawing 5 pointer
-                    Draw5(center);
-                }
-            }
-        }
 
 
-    }
-    //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the score that the pacman recives
-    function GetScore(kind)
-    {
-        //Nothing
-        if(kind==0)
-            return 0;
-        //One pointer
-        if(kind == 1)
-        {
-            return 1;
         }
-        //Fifty pointer
-        if(kind == 3)
+        //This function will draw the fifty pointer monster
+        function DrawFiftyPointer(center)
         {
-            return 50;
-        }
-        //25 pointer
-        if(kind == 6)
-        {
-            return 25;
-        }
-        //15 pointer
-        if(kind == 7)
-        {
-            return 15;
-        }
-        //5 pointer
-        if(kind == 8)
-        {
-            return 5;
-        }
-    }
+            var inside_color = "yellow";
+            var level_one_color = "red";
+            var level_two_color = "blue";
+            var level_three_color = "black";
+            var level_four_color = "grey";
 
-    //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the color of it
-    function GetColor(kind)
-    {
-        //Nothing
-        if(kind==0)
-            return "black";
-        //One pointer
-        if(kind == 1)
-        {
-            return "black";
-        }
-        //Fifty pointer
-        if(kind == 3)
-        {
-            return "blue";
-        }
-        //25 pointer
-        if(kind == 6)
-        {
-            return color25;
-        }
-        //15 pointer
-        if(kind == 7)
-        {
-            return color15;
-        }
-        //5 pointer
-        if(kind == 8)
-        {
-            return color5;
-        }
-    }
-    //This function will update the position of the pacman and the position of the monster
-    function UpdatePosition() {
-        board[shape.i][shape.j] = 0;
-        var x = GetKeyPressed();
-        //Up
-        if (x === 1) {
-            if (shape.j > 0 && board[shape.i][shape.j - 1] !== 4) {
-                shape.j--;
-                
-            }
-        }
-        //Down
-        if (x === 2) {
-            if (shape.j < 9 && board[shape.i][shape.j + 1] !== 4) {
-                shape.j++;
-            }
-        }
-        //Left
-        if (x === 3) {
-            if (shape.i > 0 && board[shape.i - 1][shape.j] !== 4) {
-                shape.i--;
-            }
-        }
-        //Right
-        if (x === 4) {
-            if (shape.i < 9 && board[shape.i + 1][shape.j] !== 4) {
-                shape.i++;
-            }
-        }
-        
-        //Updating the score
-        score = score + GetScore(board[shape.i][shape.j]);
+            //Creating the outer circle
+            context.beginPath();
+            context.arc(center.x, center.y, 30,0, 2 * Math.PI);
+            context.fillStyle = level_four_color;
+            context.fill();
 
-        //Normal update
-        if(board[shape.i][shape.j] !=3 && fifty_pointer_is_alive)
-        {
-            
-            board[shape.i][shape.j] = 2;
-            UpdateFifftyPointerPosition();
-        }
-        //Packman eats fifty pointer
-        else
-        {
-            
-            board[shape.i][shape.j] = 2;
-            if(fifty_pointer_is_alive)
-                score = score + GetScore(previous_kind_fifty_pointer);//Gets the points from the previous kind
-            fifty_pointer_is_alive = false;
-        }
+            //Creting the level three circle
+            context.beginPath();
+            context.arc(center.x, center.y, 24,0, 2 * Math.PI);
+            context.fillStyle = level_three_color;
+            context.fill();
 
-        var currentTime = new Date();
-        time_elapsed = (currentTime - start_time) / 1000;
-        if (score >= 20 && time_elapsed <= 10) {
-            pac_color = "green";
+            //Creting the level two circle
+            context.beginPath();
+            context.arc(center.x, center.y, 18,0, 2 * Math.PI);
+            context.fillStyle = level_two_color;
+            context.fill();
+
+            //Creting the level one circle
+            context.beginPath();
+            context.arc(center.x, center.y, 12,0, 2 * Math.PI);
+            context.fillStyle = level_one_color;
+            context.fill();
+
+            //Creting the inside circle
+            context.beginPath();
+            context.arc(center.x, center.y, 6,0, 2 * Math.PI);
+            context.fillStyle = inside_color;
+            context.fill();
         }
-//        if (score >= 50) {
-    if (score >= 500) {
-            window.clearInterval(interval);
-            window.alert("Game completed");
-        }
-    else{
-            if(time_elapsed>=time_limit)
+        //This function recieves the center of the pacman and will draw it
+        function DrawPacman(center)
+        {
+            var key_pressed = GetKeyPressed();
+            if(init == true)
             {
-//                lblTime.value = 0;
+                key_pressed = 4;
+                init = false;
+            }
+            SetPackManParam(key_pressed)
+            context.beginPath();
+            context.arc(center.x, center.y, 30, from_big_circle, to_big_circle); // half circle
+            context.lineTo(center.x, center.y);
+            context.fillStyle = pac_color; //color
+            context.fill();
+
+            context.beginPath();
+            context.arc(center.x + eye_center_x, center.y + eye_center_y, 5, 0, 2 * Math.PI); // circle
+            context.fillStyle = "black"; //color
+            context.fill();
+        }
+        //This function recieves the center of the one pointer and will draw it
+        function DrawOnePointer(center)
+        {
+            context.beginPath();
+            context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+            context.fillStyle = "black"; //color
+            context.fill();
+        }
+
+        //This function recieves the center of a wall and will draw it
+        function DrawWall(center)
+        {
+            context.beginPath();
+            context.rect(center.x - 30, center.y - 30, 60, 60);
+            context.fillStyle = "grey"; //color
+            context.fill();
+        }
+        //This function will draw the background of the board
+        function DrawBackground(center)
+        {
+            context.beginPath();
+            context.rect(center.x - 30, center.y - 30, 60, 60);
+            context.fillStyle ="#7BCCB5"; //color
+            context.fill();
+        }
+        //This function will draw the board
+        function Draw() {
+
+            context.clearRect(0, 0, canvas.width, canvas.height); //clean board
+            lblScore.value = score;
+            lblTime.value = Math.floor((time_limit-time_elapsed)*10)/10.0;
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    var center = new Object();
+                    center.x = i * 60 + 30;
+                    center.y = j * 60 + 30;
+
+
+                    //Drawing background
+                    DrawBackground(center);
+                    //Drawing packman
+                    if (board[i][j] === 2) {
+                        DrawPacman(center);
+                    } else if (board[i][j] === 1) {//Drawing one pointers
+                        //DrawOnePointer(center);
+                        Draw5(center);
+
+                    } else if (board[i][j] === 4) {//Drawing walls
+                        DrawWall(center);
+                    }
+                    else if (board[i][j] === 3) {//Drawing fifty pointer
+                        DrawFiftyPointer(center);
+                    }
+                    else if (board[i][j] === 6) {//Drawing 25 pointer
+                        Draw25(center);
+                    }
+                    else if (board[i][j] === 7) {//Drawing 15 pointer
+                        Draw15(center);
+                    }
+                    else if (board[i][j] === 8) {//Drawing 5 pointer
+                        Draw5(center);
+                    }
+                }
+            }
+
+
+        }
+        //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the score that the pacman recives
+        function GetScore(kind)
+        {
+            //Nothing
+            if(kind==0)
+                return 0;
+            //One pointer
+            if(kind == 1)
+            {
+                return 1;
+            }
+            //Fifty pointer
+            if(kind == 3)
+            {
+                return 50;
+            }
+            //25 pointer
+            if(kind == 6)
+            {
+                return 25;
+            }
+            //15 pointer
+            if(kind == 7)
+            {
+                return 15;
+            }
+            //5 pointer
+            if(kind == 8)
+            {
+                return 5;
+            }
+        }
+
+        //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the color of it
+        function GetColor(kind)
+        {
+            //Nothing
+            if(kind==0)
+                return "black";
+            //One pointer
+            if(kind == 1)
+            {
+                return "black";
+            }
+            //Fifty pointer
+            if(kind == 3)
+            {
+                return "blue";
+            }
+            //25 pointer
+            if(kind == 6)
+            {
+                return color25;
+            }
+            //15 pointer
+            if(kind == 7)
+            {
+                return color15;
+            }
+            //5 pointer
+            if(kind == 8)
+            {
+                return color5;
+            }
+        }
+        //This function will update the position of the pacman and the position of the monster
+        function UpdatePosition() {
+            board[shape.i][shape.j] = 0;
+            var x = GetKeyPressed();
+            //Up
+            if (x === 1) {
+                if (shape.j > 0 && board[shape.i][shape.j - 1] !== 4) {
+                    shape.j--;
+
+                }
+            }
+            //Down
+            if (x === 2) {
+                if (shape.j < 9 && board[shape.i][shape.j + 1] !== 4) {
+                    shape.j++;
+                }
+            }
+            //Left
+            if (x === 3) {
+                if (shape.i > 0 && board[shape.i - 1][shape.j] !== 4) {
+                    shape.i--;
+                }
+            }
+            //Right
+            if (x === 4) {
+                if (shape.i < 9 && board[shape.i + 1][shape.j] !== 4) {
+                    shape.i++;
+                }
+            }
+
+            //Updating the score
+            score = score + GetScore(board[shape.i][shape.j]);
+
+            //Normal update
+            if(board[shape.i][shape.j] !=3 && fifty_pointer_is_alive)
+            {
+
+                board[shape.i][shape.j] = 2;
+                UpdateFifftyPointerPosition();
+            }
+            //Packman eats fifty pointer
+            else
+            {
+
+                board[shape.i][shape.j] = 2;
+                if(fifty_pointer_is_alive)
+                    score = score + GetScore(previous_kind_fifty_pointer);//Gets the points from the previous kind
+                fifty_pointer_is_alive = false;
+            }
+
+            var currentTime = new Date();
+            time_elapsed = (currentTime - start_time) / 1000;
+            if (score >= 20 && time_elapsed <= 10) {
+                pac_color = "green";
+            }
+//        if (score >= 50) {
+            if (score >= 500) {
                 window.clearInterval(interval);
                 window.alert("Game completed");
             }
-            else
-            {
-                Draw();
-            }
-            
-        }
-    }
+            else{
+                if(time_elapsed>=time_limit)
+                {
+//                lblTime.value = 0;
+                    window.clearInterval(interval);
+                    window.alert("Game completed");
+                }
+                else
+                {
+                    Draw();
+                }
 
-
-    //This function will return true if the fiftypointe is allowed to step on the given kind
-    function IsAllowedToFiftyPointer(kind)
-    {
-        return kind!=2 && kind!=4 ;
-    }
-
-    //This function will update the position of the fifty pointer
-    function UpdateFifftyPointerPosition() {
-        board[fifty_pointer_loc.i][fifty_pointer_loc.j] = previous_kind_fifty_pointer;
-
-        var directionAllowed =[false,false,false,false];
-        var count = 0;
-
-        //Up
-        if (fifty_pointer_loc.j > 0 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i][fifty_pointer_loc.j - 1])) {
-            directionAllowed[0] = true;
-            count++;
-        }
-        
-        //Down
-        if (fifty_pointer_loc.j < 9 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i][fifty_pointer_loc.j + 1])) {
-            directionAllowed[1] = true;
-            count++;
-        }
-        
-        //Left
-        if (fifty_pointer_loc.i > 0 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i - 1][fifty_pointer_loc.j])) {
-            directionAllowed[2] = true;
-            count++;
-        }
-        
-        //Right
-        if (fifty_pointer_loc.i < 9 &&IsAllowedToFiftyPointer(board[fifty_pointer_loc.i + 1][fifty_pointer_loc.j])) {
-            directionAllowed[3] = true;
-            count++;
-        }
-        
-        //Selecting random direction
-        var randomNum = Math.random();
-        var index = Math.floor(randomNum*count) + 1;
-        var dir =0;
-        for(i=0;i<index && i<directionAllowed.length;i++)
-        {
-            if(directionAllowed[i])
-                dir = i+1;
-            else
-            {
-                index++;
             }
         }
 
-        //Updating the location
-        var x = -1;
-        var y = -1;
-        if(dir==1)
+
+        //This function will return true if the fiftypointe is allowed to step on the given kind
+        function IsAllowedToFiftyPointer(kind)
         {
-            fifty_pointer_loc.j--;
+            return kind!=2 && kind!=4 ;
         }
-        else
-        {
-            if(dir==2)
+
+        //This function will update the position of the fifty pointer
+        function UpdateFifftyPointerPosition() {
+            board[fifty_pointer_loc.i][fifty_pointer_loc.j] = previous_kind_fifty_pointer;
+
+            var directionAllowed =[false,false,false,false];
+            var count = 0;
+
+            //Up
+            if (fifty_pointer_loc.j > 0 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i][fifty_pointer_loc.j - 1])) {
+                directionAllowed[0] = true;
+                count++;
+            }
+
+            //Down
+            if (fifty_pointer_loc.j < 9 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i][fifty_pointer_loc.j + 1])) {
+                directionAllowed[1] = true;
+                count++;
+            }
+
+            //Left
+            if (fifty_pointer_loc.i > 0 && IsAllowedToFiftyPointer(board[fifty_pointer_loc.i - 1][fifty_pointer_loc.j])) {
+                directionAllowed[2] = true;
+                count++;
+            }
+
+            //Right
+            if (fifty_pointer_loc.i < 9 &&IsAllowedToFiftyPointer(board[fifty_pointer_loc.i + 1][fifty_pointer_loc.j])) {
+                directionAllowed[3] = true;
+                count++;
+            }
+
+            //Selecting random direction
+            var randomNum = Math.random();
+            var index = Math.floor(randomNum*count) + 1;
+            var dir =0;
+            for(i=0;i<index && i<directionAllowed.length;i++)
             {
-                fifty_pointer_loc.j++;
+                if(directionAllowed[i])
+                    dir = i+1;
+                else
+                {
+                    index++;
+                }
+            }
+
+            //Updating the location
+            var x = -1;
+            var y = -1;
+            if(dir==1)
+            {
+                fifty_pointer_loc.j--;
             }
             else
             {
+                if(dir==2)
+                {
+                    fifty_pointer_loc.j++;
+                }
+                else
+                {
                     if(dir==3)
                     {
                         fifty_pointer_loc.i--;
@@ -714,65 +877,66 @@ TIME:
                     else
                     {
                         if(dir==4)
-                        {                     
-                            fifty_pointer_loc.i++;           
+                        {
+                            fifty_pointer_loc.i++;
                         }
                     }
-            
+
+                }
             }
-        }    
-        previous_kind_fifty_pointer = board[fifty_pointer_loc.i][fifty_pointer_loc.j];
-        board[fifty_pointer_loc.i][fifty_pointer_loc.j] = 3;
+            previous_kind_fifty_pointer = board[fifty_pointer_loc.i][fifty_pointer_loc.j];
+            board[fifty_pointer_loc.i][fifty_pointer_loc.j] = 3;
 
-    }
+        }
 
-    //This function will draw the 25 pointer
-    function Draw25(center)
-    {
-        context.beginPath();
-        context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-        context.fillStyle = color25; //color
-        context.fill();
-        context.beginPath();
-        textColor = "black";
-        if(textColor == color25)
-            textColor = "white";
-        context.fillStyle = textColor;
-        context.fillText("25",center.x-5,center.y+4);
+        //This function will draw the 25 pointer
+        function Draw25(center)
+        {
+            context.beginPath();
+            context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
+            context.fillStyle = color25; //color
+            context.fill();
+            context.beginPath();
+            textColor = "black";
+            if(textColor == color25)
+                textColor = "white";
+            context.fillStyle = textColor;
+            context.fillText("25",center.x-5,center.y+4);
 
-    }
-    //This function will draw the 15 pointer
-    function Draw15(center)
-    {
-        context.beginPath();
-        context.arc(center.x, center.y, 10, 0, 2 * Math.PI); // circle
-        context.fillStyle = color15; //color
-        context.fill();
-        context.beginPath();
-        textColor = "black";
-        if(textColor == color15)
-            textColor = "white";
-        context.fillStyle = textColor;
-        context.fillText("15",center.x-6,center.y+4);
+        }
+        //This function will draw the 15 pointer
+        function Draw15(center)
+        {
+            context.beginPath();
+            context.arc(center.x, center.y, 10, 0, 2 * Math.PI); // circle
+            context.fillStyle = color15; //color
+            context.fill();
+            context.beginPath();
+            textColor = "black";
+            if(textColor == color15)
+                textColor = "white";
+            context.fillStyle = textColor;
+            context.fillText("15",center.x-6,center.y+4);
 
-    }
-    //This function will draw the 5 pointer
-    function Draw5(center)
-    {
-        context.beginPath();
-        context.arc(center.x, center.y, 7, 0, 2 * Math.PI); // circle
-        context.fillStyle = color5; //color
-        context.fill();
-        context.beginPath();
-        textColor = "black";
-        if(textColor == color5)
-            textColor = "white";
-        context.fillStyle = textColor;
-        context.fillText("5",center.x-3,center.y+4);
+        }
+        //This function will draw the 5 pointer
+        function Draw5(center)
+        {
+            context.beginPath();
+            context.arc(center.x, center.y, 7, 0, 2 * Math.PI); // circle
+            context.fillStyle = color5; //color
+            context.fill();
+            context.beginPath();
+            textColor = "black";
+            if(textColor == color5)
+                textColor = "white";
+            context.fillStyle = textColor;
+            context.fillText("5",center.x-3,center.y+4);
 
-    }
-</script>
+        }
+    </script>
+
+</section>
 </body>
-
 </html>
 
