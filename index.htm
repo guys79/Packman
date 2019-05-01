@@ -56,7 +56,6 @@
             menu_go_to.style.backgroundColor = select_color;
 
 
-
             document.body.style.backgroundImage = "url('background.jpg')";
             if(section_name == "game")
             {
@@ -68,7 +67,9 @@
         function Initialize()
         {
             var game = document.getElementById('game_menu');
+
             game.hidden = true;
+
 
             var starting_page = 'welcome';
             GoTo(starting_page);
@@ -147,7 +148,6 @@
 
         }
     </style>
-
 
     <div id ="welcome_div">
         <input type="button" id="welcome_signup" class="btn" value="Sign Up" onclick="GoTo('signup')">
@@ -1000,7 +1000,7 @@
 
         function canMoveHorizontal(monster_loc){
             if(monster_loc.i-shape.i<0){
-                return monster_loc.i < 9 && IsAllowedToMonster(board[monster_loc.i + 1][monster_loc.j]);
+                return monster_loc.i < 9 && IsAllowedToMonser(board[monster_loc.i + 1][monster_loc.j]);
             }
             return monster_loc.i > 0 && IsAllowedToMonster(board[monster_loc.i - 1][monster_loc.j])
         }
