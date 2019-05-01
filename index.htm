@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-<head></head>
+<head>
+
+</head>
 
 <body>SCORE:
 <input id="lblScore" type="text"/>
@@ -10,6 +12,13 @@ TIME:
 <input id="lblTime" type="text"/>
 <br/>
 <canvas id="canvas" height="600" width="600"></canvas>
+<section id="welcome"></section>
+<section id="signin"></section>
+<section id="login"></section>
+<section id="settings"></section>
+<section id="about"></section>
+
+
 
 
 <script type="text/javascript">
@@ -51,13 +60,13 @@ TIME:
     //It will initialize all the variables and set the interval
     function Start() {
 
-        ShowPoint(6);
+        //ShowPoint(3);
         //DrawGivenPoints(points,center,color);
         //var c = new Object();
         //c.x = 150;
         //c.y = 150;
         //DrawGivenPoints("+25",c,"black",30);
-        /*board = new Array();
+        board = new Array();
         score = 0;
         fifty_pointer_is_alive = true;
         init = true;
@@ -93,7 +102,7 @@ TIME:
         var cnt = num_of_cols*num_of_rows;
         //number of walls
         var num_of_walls = 5;
-        cnt = cnt - num_of_walls;
+        cnt = cnt - num_of_walls - 1;
 
 
         //Random location of fifty pointer
@@ -120,7 +129,7 @@ TIME:
                     else {
                         var randomNum = Math.random();
                         if (randomNum <= 1.0 * food_remain / cnt) {
-                            food_remain--;
+                            
                             if(randomNum<= 1.0 * point25/food_remain)
                             {
                                     board[i][j] = 6;
@@ -138,7 +147,9 @@ TIME:
                                     board[i][j] = 8;
                                     point5--;
                                 }
+                                
                             }
+                            food_remain--;
                         } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
                             shape.i = i;
                             shape.j = j;
@@ -191,8 +202,8 @@ TIME:
         addEventListener("keyup", function (e) {
             keysDown[e.code] = false;
         }, false);
-      //  interval = setInterval(UpdatePosition, interval_time);
-      */
+        interval = setInterval(UpdatePosition, interval_time);
+      
     }
 
     //Thiis functio will set the default keys for moving the pacman
@@ -218,6 +229,10 @@ TIME:
             this.son.setAttribute("autostart", "true");
             document.body.appendChild(this.son);
         }
+        this.stop = function()
+        {
+            document.body.removeChild(this.son);
+        }
             
     }
     //This function finds empty cell in the board
@@ -237,15 +252,18 @@ TIME:
         if(obtained_score<0)
             score_to_show = ""+obtained_score;
         var interval_container = new Object();
-        interval_container.iter = 0;
+        interval_container.iter = 1;
         var center = new Object();
         center.x = 100;
         center.y = 100;
+        center.prevx = 100;
+        center.prevy = 100;
 
-        var size =15 + 15*(score/50) ;
+
+        var size =15 + 15*(obtained_score/50) ;
         if(size<15)
         {
-            size =15 - 15*(score/50) ;
+            size =15 - 15*(obtained_score/50) ;
         }
         interval_container.interval = setInterval(function(){DisplayMovingDown(score_to_show,interval_container,GetColor(kind),center,size)},1000)
        
@@ -255,12 +273,17 @@ TIME:
     {
         lblScore.value = interval_container.iter;
         
-       /* if(interval_container.iter>=10)
+        if(interval_container.iter>=5)
         {
+            context.beginPath();
+            context.clearRect(center.x,center.y-23,50,40);
             window.clearInterval(interval_container.interval);
-        }*/
-        interval_container.iter++;
+        }
+        
+        center.prevx = center.x;
+        center.prevy = center.y;
         center.y = center.y + 50;
+
         lblTime.value = center.y;
         interval_container.iter++;
         DrawGivenPoints(score_to_show,center,color,size);
@@ -268,9 +291,9 @@ TIME:
 
     function DrawGivenPoints(points,center,color,size)
     {
-        
         context.beginPath();
-        
+        context.clearRect(center.prevx,center.prevy-23,50,40);
+        context.beginPath();
         context.font = size+"px Arial";
         textColor = color;
         if(textColor == "white")
