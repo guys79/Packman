@@ -74,6 +74,13 @@
                     {
                         ResetLogin();
                     }
+                    else
+                    {
+                        if(section_name === "settings")
+                        {
+                            ResetSettings();
+                        }
+                    }
                 }
             }
 
@@ -101,7 +108,7 @@
 
 
             var game = document.getElementById('game_menu');
-            game.hidden = true;
+            //game.hidden = true;
             var starting_page = 'welcome';
             GoTo(starting_page);
 
@@ -313,9 +320,10 @@
             if(isValid)
             {
                 var game = document.getElementById('game_menu');
-                game.hidden = true;
+                game.hidden = false;
                 errorLabel.innerText = "";
                 GoTo('settings');
+
             }
             else
             {
@@ -347,7 +355,129 @@
         }
     </script>
 </section>
-<section id="settings" display="none"></section>
+<section id="settings" display="none">
+    <style>
+        .btn_settings
+        {
+            width : 5%;
+            display: inline-block;
+            margin-bottom: 0.2%;
+            padding: 20px 0px;
+            text-align: center;
+            color: white;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            position: relative;
+            background: linear-gradient(-45deg,#336b87,#90afc5);
+        }
+        #up_btn
+        {
+            display: block;
+            left : 5.2%;
+        }
+        #keys_options
+        {
+            position: fixed;
+            top:20%;
+            left:40%;
+            width:100%;
+            height:20%;
+        }
+    </style>
+    <div id="keys_options">
+
+        <input type="button" id="up_btn" class="btn_settings" onclick="BtnFirstPress('up_btn')">
+        <input type="button" id="left_btn" class="btn_settings" onclick="BtnFirstPress('left_btn')">
+        <input type="button" id="down_btn" class="btn_settings" onclick="BtnFirstPress('down_btn')">
+        <input type="button" id="right_btn" class="btn_settings" onclick="BtnFirstPress('right_btn')">
+    </div>
+    <div id="settings_div">
+        <script type="text/javascript">
+            function ResetSettings()
+            {
+                var up_key_btn = document.getElementById('up_btn');
+                var down_key_btn = document.getElementById('down_btn');
+                var left_key_btn = document.getElementById('left_btn');
+                var right_key_btn = document.getElementById('right_btn');
+
+                up_key_btn.value =up_key;
+                down_key_btn.value = down_key;
+                left_key_btn.value = left_key;
+                right_key_btn.value = right_key;
+
+
+
+            }
+
+            function BtnFirstPress(id)
+            {
+                var key = document.getElementById(id);
+                key.value = "Press any key ";
+
+                key.addEventListener("keydown", function (e) {
+                    chooseKey(e,id);
+                });
+            }
+            function chooseKey(e,id)
+            {
+
+                var key = document.getElementById(id);
+                key.removeEventListener("keydown",function (ev) {  });
+
+                //Unclick
+                key.disabled = true;
+                key.disabled = false;
+
+
+                key.value = e.code;
+                if(key.value.indexOf("Digit")!=-1)
+                {
+                    var index = key.value.indexOf("Digit");
+                    key.value = key.value.substring(index+5);
+                }else
+                {
+                    if(key.value.indexOf("Key")!=-1)
+                    {
+                        var index = key.value.indexOf("Key");
+                        key.value = key.value.substring(index+3);
+                    }
+                }
+
+
+
+                var index = id.indexOf("_");
+                var type = id.substring(0,index);
+
+                if(type==="up")
+                {
+                    up_key = e.code;
+                }
+                else
+                {
+                    if(type==="down")
+                    {
+                        down_key = e.code;
+                    }
+                    else
+                    {
+                        if(type==="left")
+                        {
+                            left_key = e.code;
+                        }
+                        //Right
+                        else
+                        {
+                            right_key = e.code;
+                        }
+                    }
+                }
+            }
+        </script>
+    </div>
+    <div id="startRandom">
+
+    </div>
+
+</section>
 <section id="about" display="none"></section>
 
 
