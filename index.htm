@@ -9,6 +9,7 @@
 
         window.addEventListener("load",Initialize);
         var usersArr;
+        var today;
         function GoTo(section_name)
         {
 
@@ -57,9 +58,23 @@
 
 
             document.body.style.backgroundImage = "url('background.jpg')";
-            if(section_name == "game")
+            if(section_name === "game")
             {
                 document.body.style.backgroundImage = "url('background_game.jpg')";
+            }
+            else
+            {
+                if(section_name === "signup")
+                {
+                    ReserSignUp();
+                }
+                else
+                {
+                    if(section_name === "login")
+                    {
+                        ResetLogin();
+                    }
+                }
             }
 
 
@@ -67,7 +82,7 @@
         function Initialize()
         {
 
-            var today = new Date().toISOString().substr(0,10);
+            today = new Date().toISOString().substr(0,10);
             document.getElementById('birthDate_signup').value = today;
 
             //Creating array of users
@@ -177,9 +192,7 @@
 <section id="signup" display="none">
     <style>
         .userdiv{
-            position:fixed;
-            top: 15%;
-            left: 30%;
+
             background: #cee9ea;
             padding: 10px;
             width: 40%;
@@ -193,16 +206,26 @@
             margin-right: 15px;
             width: 100%;
         }
+        #div_signup
+        {
+            position:fixed;
+            top: 15%;
+            left: 30%;
+        }
+        .errorMessages
+        {
+            color: red;
+        }
     </style>
-    <div class="userdiv">
-
+    <div class="userdiv" id ="div_signup">
+        <h1>Sign Up:</h1>
         <label for="username_signup">Username</label>
         <br/>
         <input class="inptUser" type="text" id="username_signup" placeholder="Username">
         <br/>
         <label for="password_signup">Password</label>
         <br/>
-        <input class="inptUser" type="text" id="password_signup" placeholder="Password">
+        <input class="inptUser" type="password" id="password_signup" placeholder="Password">
         <br/>
         <label for="firstName_signup">First Name</label>
         <br/>
@@ -214,9 +237,13 @@
         <br/>
         <label for="birthDate_signup">Birth Date</label>
         <br/>
-        <input class="inptUser" type="date" id="birthDate_signup">
+        <input class="inptUser" type="date" id="birthDate_signup" text-align ="center">
         <br/>
-        <input class="btn" type="button" id="suxbmit_btn" value="Submit" onclick="Submit()">
+        <label id = "errors_signup" class="errorMessages"></label>
+        <br/>
+        <input class="btn" type="button" id="submit_btn" value="Submit" onclick="Submit()">
+
+
     </div>
     <script type="text/javascript">
 
@@ -235,11 +262,91 @@
             newUser.lastname = lastName;
             newUser.birthdate = birthDate;
             usersArr.push(newUser);
+            GoTo('login');
 
+        }
+        function ReserSignUp()
+        {
+            document.getElementById('username_signup').value="";
+            document.getElementById('password_signup').value="";
+            document.getElementById('firstName_signup').value="";
+            document.getElementById('lastName_signup').value="";
+            document.getElementById('birthDate_signup').value=today;
         }
     </script>
 </section>
-<section id="login" display="none"></section>
+<section id="login" display="none">
+    <style>
+        #div_login
+        {
+            position:fixed;
+            top: 35%;
+            left: 30%;
+        }
+    </style>
+    <div class="userdiv" id="div_login">
+        <h1>Login:</h1>
+        <label>Username</label>
+        <br/>
+        <input class="inptUser" type="text" id="username_login" placeholder="Username">
+        <br/>
+        <label for="password_signup">Password</label>
+        <br/>
+        <input class="inptUser" type="password" id="password_login" placeholder="Password">
+        <br/>
+        <label id = "errors_login" class="errorMessages"></label>
+        <br/>
+        <br/>
+        <br/>
+
+        <input class="btn" type="button" id="login_btn" value="Log In" onclick="loginPressed()">
+
+
+
+    </div>
+    <script type="text/javascript">
+        function loginPressed()
+        {
+
+            var isValid = ValidateUser();
+            var errorLabel = document.getElementById('errors_login');
+            if(isValid)
+            {
+                var game = document.getElementById('game_menu');
+                game.hidden = true;
+                errorLabel.innerText = "";
+                GoTo('settings');
+            }
+            else
+            {
+                var errorMessage = "Wrong username or password, please try again";
+                errorLabel.innerText = errorMessage;
+            }
+        }
+        function ValidateUser()
+        {
+            var username = document.getElementById('username_login').value;
+            var password = document.getElementById('password_login').value;
+
+            var i;
+            for (i = 0; i < usersArr.length; i++) {
+                if(username === usersArr[i].username)
+                {
+                    return password === usersArr[i].password;
+                }
+            }
+            return false;
+
+        }
+        function ResetLogin()
+        {
+            var username = document.getElementById('username_login');
+            var password = document.getElementById('password_login');
+            username.value = "";
+            password.value ="";
+        }
+    </script>
+</section>
 <section id="settings" display="none"></section>
 <section id="about" display="none"></section>
 
@@ -299,7 +406,7 @@
         var down_key;//The "down" key
         var left_key;//The "left" key
         var right_key;//The "right" key
-        var interval_time = 250;//The frequency of the intervals
+        var interval_time = 150;//The frequency of the intervals
         var width;
         var length;
         var monsterArr=[];
