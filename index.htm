@@ -109,7 +109,7 @@
 
 
             var game = document.getElementById('game_menu');
-            //game.hidden = true;
+            game.hidden = true;
             var starting_page = 'welcome';
             GoTo(starting_page);
 
@@ -935,17 +935,14 @@
         {
             context.beginPath();
             context.rect(center.x - 30, center.y - 30, 60, 60);
-            context.fillStyle ="#7BCCB5"; //color
+            context.fillStyle ="#c2b280"; //color
             context.fill();
         }
         //This function will draw the board
         function Draw() {
 
             context.clearRect(0, 0, canvas.width, canvas.height); //clean board
-            if(!Number.isInteger(score))
-            {
-                var g=0;
-            }
+
 
             lblScore.value = score;
             lblTime.value = Math.floor((time_limit-time_elapsed)*10)/10.0;
