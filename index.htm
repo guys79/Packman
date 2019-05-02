@@ -100,6 +100,7 @@
             fakeUser.username = "a";
             fakeUser.password = "a";
             fakeUser.firstName = "a";
+            fakeUser.email = "a";
             fakeUser.lastname = "a";
             fakeUser.birthdate = today;
             usersArr.push(fakeUser);
@@ -242,6 +243,10 @@
         <br/>
         <input class="inptUser" type="text" id="lastName_signup" placeholder="Last Name">
         <br/>
+        <label for="email_signup">Last Name</label>
+        <br/>
+        <input class="inptUser" type="text" id="email_signup" placeholder="Email Address">
+        <br/>
         <label for="birthDate_signup">Birth Date</label>
         <br/>
         <input class="inptUser" type="date" id="birthDate_signup" text-align ="center">
@@ -259,6 +264,7 @@
             var password = document.getElementById('password_signup').value;
             var firstName = document.getElementById('firstName_signup').value;
             var lastName = document.getElementById('lastName_signup').value;
+            var email = document.getElementById('email_signup').value;
             var birthDate = document.getElementById('birthDate_signup').value;
             //Check validation using jquery
             //if it's ok then:
@@ -267,6 +273,7 @@
             newUser.password = password;
             newUser.firstName = firstName;
             newUser.lastname = lastName;
+            newUser.email = email;
             newUser.birthdate = birthDate;
             usersArr.push(newUser);
             GoTo('login');
@@ -278,6 +285,7 @@
             document.getElementById('password_signup').value="";
             document.getElementById('firstName_signup').value="";
             document.getElementById('lastName_signup').value="";
+            document.getElementById('email_signup').value="";
             document.getElementById('birthDate_signup').value=today;
         }
     </script>
@@ -1398,4 +1406,5 @@
 </section>
 </body>
 </html>
+
 
