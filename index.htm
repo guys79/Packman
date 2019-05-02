@@ -2,13 +2,13 @@
 <html>
 
 <head>
-<title>Guy and Jonathan's Pacman</title>
+    <title>Guy and Jonathan's Pacman</title>
 
 
     <script type="text/javascript">
 
         window.addEventListener("load",Initialize);
-
+        var usersArr;
         function GoTo(section_name)
         {
 
@@ -66,11 +66,27 @@
         }
         function Initialize()
         {
+
+            var today = new Date().toISOString().substr(0,10);
+            document.getElementById('birthDate_signup').value = today;
+
+            //Creating array of users
+            usersArr = new Array();
+
+            //Creating the fake user
+            var fakeUser = new Object();
+            fakeUser.username = "a";
+            fakeUser.password = "a";
+            fakeUser.firstName = "a";
+            fakeUser.lastname = "a";
+            fakeUser.birthdate = today;
+            usersArr.push(fakeUser);
+
+
+
+
             var game = document.getElementById('game_menu');
-
             game.hidden = true;
-
-
             var starting_page = 'welcome';
             GoTo(starting_page);
 
@@ -158,7 +174,71 @@
 
 
 </section>
-<section id="signup" display="none"></section>
+<section id="signup" display="none">
+    <style>
+        .userdiv{
+            position:fixed;
+            top: 15%;
+            left: 30%;
+            background: #cee9ea;
+            padding: 10px;
+            width: 40%;
+
+        }
+        .inptUser
+        {
+            position: relative;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            margin-right: 15px;
+            width: 100%;
+        }
+    </style>
+    <div class="userdiv">
+
+        <label for="username_signup">Username</label>
+        <br/>
+        <input class="inptUser" type="text" id="username_signup" placeholder="Username">
+        <br/>
+        <label for="password_signup">Password</label>
+        <br/>
+        <input class="inptUser" type="text" id="password_signup" placeholder="Password">
+        <br/>
+        <label for="firstName_signup">First Name</label>
+        <br/>
+        <input class="inptUser" type="text" id="firstName_signup" placeholder="First Name">
+        <br/>
+        <label for="lastName_signup">Last Name</label>
+        <br/>
+        <input class="inptUser" type="text" id="lastName_signup" placeholder="Last Name">
+        <br/>
+        <label for="birthDate_signup">Birth Date</label>
+        <br/>
+        <input class="inptUser" type="date" id="birthDate_signup">
+        <br/>
+        <input class="btn" type="button" id="suxbmit_btn" value="Submit" onclick="Submit()">
+    </div>
+    <script type="text/javascript">
+
+        function Submit() {
+            var username = document.getElementById('username_signup').value;
+            var password = document.getElementById('password_signup').value;
+            var firstName = document.getElementById('firstName_signup').value;
+            var lastName = document.getElementById('lastName_signup').value;
+            var birthDate = document.getElementById('birthDate_signup').value;
+            //Check validation using jquery
+            //if it's ok then:
+            var newUser = new Object();
+            newUser.username = username;
+            newUser.password = password;
+            newUser.firstName = firstName;
+            newUser.lastname = lastName;
+            newUser.birthdate = birthDate;
+            usersArr.push(newUser);
+
+        }
+    </script>
+</section>
 <section id="login" display="none"></section>
 <section id="settings" display="none"></section>
 <section id="about" display="none"></section>
@@ -1000,7 +1080,7 @@
 
         function canMoveHorizontal(monster_loc){
             if(monster_loc.i-shape.i<0){
-                return monster_loc.i < 9 && IsAllowedToMonser(board[monster_loc.i + 1][monster_loc.j]);
+                return monster_loc.i < 9 && IsAllowedToMonster(board[monster_loc.i + 1][monster_loc.j]);
             }
             return monster_loc.i > 0 && IsAllowedToMonster(board[monster_loc.i - 1][monster_loc.j])
         }
