@@ -2,13 +2,14 @@
 <html>
 
 <head>
-<title>Guy and Jonathan's Pacman</title>
+    <title>Guy and Jonathan's Pacman</title>
 
 
     <script type="text/javascript">
 
         window.addEventListener("load",Initialize);
-
+        var usersArr;
+        var today;
         function GoTo(section_name)
         {
 
@@ -57,20 +58,57 @@
 
 
             document.body.style.backgroundImage = "url('background.jpg')";
-            if(section_name == "game")
+            if(section_name === "game")
             {
                 document.body.style.backgroundImage = "url('background_game.jpg')";
+            }
+            else
+            {
+                if(section_name === "signup")
+                {
+                    ReserSignUp();
+                }
+                else
+                {
+                    if(section_name === "login")
+                    {
+                        ResetLogin();
+                    }
+                    else
+                    {
+                        if(section_name === "settings")
+                        {
+                            ResetSettings();
+                        }
+                    }
+                }
             }
 
 
         }
         function Initialize()
         {
+
+            today = new Date().toISOString().substr(0,10);
+            document.getElementById('birthDate_signup').value = today;
+
+            //Creating array of users
+            usersArr = new Array();
+
+            //Creating the fake user
+            var fakeUser = new Object();
+            fakeUser.username = "a";
+            fakeUser.password = "a";
+            fakeUser.firstName = "a";
+            fakeUser.lastname = "a";
+            fakeUser.birthdate = today;
+            usersArr.push(fakeUser);
+
+
+
+
             var game = document.getElementById('game_menu');
-
-            game.hidden = true;
-
-
+            //game.hidden = true;
             var starting_page = 'welcome';
             GoTo(starting_page);
 
@@ -158,9 +196,288 @@
 
 
 </section>
-<section id="signup" display="none"></section>
-<section id="login" display="none"></section>
-<section id="settings" display="none"></section>
+<section id="signup" display="none">
+    <style>
+        .userdiv{
+
+            background: #cee9ea;
+            padding: 10px;
+            width: 40%;
+
+        }
+        .inptUser
+        {
+            position: relative;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            margin-right: 15px;
+            width: 100%;
+        }
+        #div_signup
+        {
+            position:fixed;
+            top: 15%;
+            left: 30%;
+        }
+        .errorMessages
+        {
+            color: red;
+        }
+    </style>
+    <div class="userdiv" id ="div_signup">
+        <h1>Sign Up:</h1>
+        <label for="username_signup">Username</label>
+        <br/>
+        <input class="inptUser" type="text" id="username_signup" placeholder="Username">
+        <br/>
+        <label for="password_signup">Password</label>
+        <br/>
+        <input class="inptUser" type="password" id="password_signup" placeholder="Password">
+        <br/>
+        <label for="firstName_signup">First Name</label>
+        <br/>
+        <input class="inptUser" type="text" id="firstName_signup" placeholder="First Name">
+        <br/>
+        <label for="lastName_signup">Last Name</label>
+        <br/>
+        <input class="inptUser" type="text" id="lastName_signup" placeholder="Last Name">
+        <br/>
+        <label for="birthDate_signup">Birth Date</label>
+        <br/>
+        <input class="inptUser" type="date" id="birthDate_signup" text-align ="center">
+        <br/>
+        <label id = "errors_signup" class="errorMessages"></label>
+        <br/>
+        <input class="btn" type="button" id="submit_btn" value="Submit" onclick="Submit()">
+
+
+    </div>
+    <script type="text/javascript">
+
+        function Submit() {
+            var username = document.getElementById('username_signup').value;
+            var password = document.getElementById('password_signup').value;
+            var firstName = document.getElementById('firstName_signup').value;
+            var lastName = document.getElementById('lastName_signup').value;
+            var birthDate = document.getElementById('birthDate_signup').value;
+            //Check validation using jquery
+            //if it's ok then:
+            var newUser = new Object();
+            newUser.username = username;
+            newUser.password = password;
+            newUser.firstName = firstName;
+            newUser.lastname = lastName;
+            newUser.birthdate = birthDate;
+            usersArr.push(newUser);
+            GoTo('login');
+
+        }
+        function ReserSignUp()
+        {
+            document.getElementById('username_signup').value="";
+            document.getElementById('password_signup').value="";
+            document.getElementById('firstName_signup').value="";
+            document.getElementById('lastName_signup').value="";
+            document.getElementById('birthDate_signup').value=today;
+        }
+    </script>
+</section>
+<section id="login" display="none">
+    <style>
+        #div_login
+        {
+            position:fixed;
+            top: 35%;
+            left: 30%;
+        }
+    </style>
+    <div class="userdiv" id="div_login">
+        <h1>Login:</h1>
+        <label>Username</label>
+        <br/>
+        <input class="inptUser" type="text" id="username_login" placeholder="Username">
+        <br/>
+        <label for="password_signup">Password</label>
+        <br/>
+        <input class="inptUser" type="password" id="password_login" placeholder="Password">
+        <br/>
+        <label id = "errors_login" class="errorMessages"></label>
+        <br/>
+        <br/>
+        <br/>
+
+        <input class="btn" type="button" id="login_btn" value="Log In" onclick="loginPressed()">
+
+
+
+    </div>
+    <script type="text/javascript">
+        function loginPressed()
+        {
+
+            var isValid = ValidateUser();
+            var errorLabel = document.getElementById('errors_login');
+            if(isValid)
+            {
+                var game = document.getElementById('game_menu');
+                game.hidden = false;
+                errorLabel.innerText = "";
+                GoTo('settings');
+
+            }
+            else
+            {
+                var errorMessage = "Wrong username or password, please try again";
+                errorLabel.innerText = errorMessage;
+            }
+        }
+        function ValidateUser()
+        {
+            var username = document.getElementById('username_login').value;
+            var password = document.getElementById('password_login').value;
+
+            var i;
+            for (i = 0; i < usersArr.length; i++) {
+                if(username === usersArr[i].username)
+                {
+                    return password === usersArr[i].password;
+                }
+            }
+            return false;
+
+        }
+        function ResetLogin()
+        {
+            var username = document.getElementById('username_login');
+            var password = document.getElementById('password_login');
+            username.value = "";
+            password.value ="";
+        }
+    </script>
+</section>
+<section id="settings" display="none">
+    <style>
+        .btn_settings
+        {
+            width : 5%;
+            display: inline-block;
+            margin-bottom: 0.2%;
+            padding: 20px 0px;
+            text-align: center;
+            color: white;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            position: relative;
+            background: linear-gradient(-45deg,#336b87,#90afc5);
+        }
+        #up_btn
+        {
+            display: block;
+            left : 5.2%;
+        }
+        #keys_options
+        {
+            position: fixed;
+            top:20%;
+            left:40%;
+            width:100%;
+            height:20%;
+        }
+    </style>
+    <div id="keys_options">
+
+        <input type="button" id="up_btn" class="btn_settings" onclick="BtnFirstPress('up_btn')">
+        <input type="button" id="left_btn" class="btn_settings" onclick="BtnFirstPress('left_btn')">
+        <input type="button" id="down_btn" class="btn_settings" onclick="BtnFirstPress('down_btn')">
+        <input type="button" id="right_btn" class="btn_settings" onclick="BtnFirstPress('right_btn')">
+    </div>
+    <div id="settings_div">
+        <script type="text/javascript">
+            function ResetSettings()
+            {
+                var up_key_btn = document.getElementById('up_btn');
+                var down_key_btn = document.getElementById('down_btn');
+                var left_key_btn = document.getElementById('left_btn');
+                var right_key_btn = document.getElementById('right_btn');
+
+                up_key_btn.value =up_key;
+                down_key_btn.value = down_key;
+                left_key_btn.value = left_key;
+                right_key_btn.value = right_key;
+
+
+
+            }
+
+            function BtnFirstPress(id)
+            {
+                var key = document.getElementById(id);
+                key.value = "Press any key ";
+
+                key.addEventListener("keydown", function (e) {
+                    chooseKey(e,id);
+                });
+            }
+            function chooseKey(e,id)
+            {
+
+                var key = document.getElementById(id);
+                key.removeEventListener("keydown",function (ev) {  });
+
+                //Unclick
+                key.disabled = true;
+                key.disabled = false;
+
+
+                key.value = e.code;
+                if(key.value.indexOf("Digit")!=-1)
+                {
+                    var index = key.value.indexOf("Digit");
+                    key.value = key.value.substring(index+5);
+                }else
+                {
+                    if(key.value.indexOf("Key")!=-1)
+                    {
+                        var index = key.value.indexOf("Key");
+                        key.value = key.value.substring(index+3);
+                    }
+                }
+
+
+
+                var index = id.indexOf("_");
+                var type = id.substring(0,index);
+
+                if(type==="up")
+                {
+                    up_key = e.code;
+                }
+                else
+                {
+                    if(type==="down")
+                    {
+                        down_key = e.code;
+                    }
+                    else
+                    {
+                        if(type==="left")
+                        {
+                            left_key = e.code;
+                        }
+                        //Right
+                        else
+                        {
+                            right_key = e.code;
+                        }
+                    }
+                }
+            }
+        </script>
+    </div>
+    <div id="startRandom">
+
+    </div>
+
+</section>
 <section id="about" display="none"></section>
 
 
@@ -219,7 +536,7 @@
         var down_key;//The "down" key
         var left_key;//The "left" key
         var right_key;//The "right" key
-        var interval_time = 250;//The frequency of the intervals
+        var interval_time = 150;//The frequency of the intervals
         var width;
         var length;
         var monsterArr=[];
@@ -1000,7 +1317,7 @@
 
         function canMoveHorizontal(monster_loc){
             if(monster_loc.i-shape.i<0){
-                return monster_loc.i < 9 && IsAllowedToMonser(board[monster_loc.i + 1][monster_loc.j]);
+                return monster_loc.i < 9 && IsAllowedToMonster(board[monster_loc.i + 1][monster_loc.j]);
             }
             return monster_loc.i > 0 && IsAllowedToMonster(board[monster_loc.i - 1][monster_loc.j])
         }
