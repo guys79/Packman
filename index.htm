@@ -3,10 +3,25 @@
 
 <head>
     <title>Guy and Jonathan's Pacman</title>
+    <style>
+        #header
+        {
+            background-color: #485864;
+            text-align: center;
+        }
+    </style>
+    <header id="header">
 
-    <script src="jquery-3.4.0.min.js"></script>
-    <script src="jquery.validate.js"></script>
-    <script src="validate_sign_up.js" language="JavaScript"></script>
+        <img src="source/pacman_logo.jpg" width="200" height="50">
+
+
+        <h4>
+            <p><b>Authors:</b> Guy Schlesinger - 207232885 & Jonathan Shaya - 318530706
+        </h4>
+    </header>
+    <script src="javascript/jquery-3.4.0.min.js"></script>
+    <script src="javascript/jquery.validate.js"></script>
+    <script src="javascript/validate_sign_up.js" language="JavaScript"></script>
 
 
     <script type="text/javascript">
@@ -14,8 +29,12 @@
         window.addEventListener("load",Initialize);
         var usersArr;
         var today;
+        var current;
         function GoTo(section_name)
         {
+
+            window.clearInterval(interval);
+
 
 
             var menu_extension = "_menu";
@@ -61,10 +80,11 @@
             menu_go_to.style.backgroundColor = select_color;
 
 
-            document.body.style.backgroundImage = "url('background.jpg')";
+            document.body.style.backgroundImage = "url('source/background.jpg')";
             if(section_name === "game")
             {
-                document.body.style.backgroundImage = "url('background_game.jpg')";
+                document.body.style.backgroundImage = "url('source/background_game.jpg')";
+                document.getElementById("name_of_player").innerHTML = "Currently Playing " +current.firstName +" " +current.lastname;
             }
             else
             {
@@ -84,7 +104,7 @@
                         {
                             ResetSettings();
 
-                            document.body.style.backgroundImage = "url('settings_background.jpg')";
+                            document.body.style.backgroundImage = "url('source/settings_background.jpg')";
                         }
                     }
                 }
@@ -139,7 +159,7 @@
 
 <style>
     #body {
-        background: url('background.jpg') no-repeat center center fixed;
+        background: url('source/background.jpg') no-repeat center center fixed;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
@@ -199,7 +219,7 @@
         #welcome_div
         {
             position: fixed;
-            bottom: 0;
+            top:75%;
             width: 100%;
 
         }
@@ -223,6 +243,7 @@
             width: 40%;
             color: red;
 
+
         }
         .inptUser
         {
@@ -235,7 +256,7 @@
         #div_signup
         {
             position:fixed;
-            top: 15%;
+            top: 25%;
             left: 30%;
         }
         .errorMessages
@@ -270,7 +291,7 @@
             <br/>
             <input class="inptUser" type="text" id="lastName_signup" placeholder="Last Name" name="lName">
             <br/>
-            <label for="email_signup" class="sign_up_labels">Last Name</label>
+            <label for="email_signup" class="sign_up_labels">Email</label>
             <br/>
             <input class="inptUser" type="text" id="email_signup" placeholder="Email Address" name="Email">
             <br/>
@@ -280,7 +301,7 @@
             <br/>
             <label id = "errors_signup" class="errorMessages"></label>
             <br/>
-            <input class="btn" type="submit" id="submit_btn" value="Submit">
+            <input class="btn" type="submit" id="submit_btn" value="Submit" >
         </form>
 
     </div>
@@ -365,6 +386,7 @@
                 errorLabel.innerText = "";
                 GoTo('settings');
 
+
             }
             else
             {
@@ -381,7 +403,12 @@
             for (i = 0; i < usersArr.length; i++) {
                 if(username === usersArr[i].username)
                 {
-                    return password === usersArr[i].password;
+                    if( password === usersArr[i].password)
+                    {
+                        current = usersArr[i];
+                        return true;
+                    }
+
                 }
             }
             return false;
@@ -667,17 +694,21 @@
 <body id="body_game">
 
 <section id="game" display="none" >
+
     SCORE:
     <input id="lblScore" type="text"/>
     TIME:
     <input id="lblTime" type="text"/>
+    <br/>
+    <br/>
     LIVES:
     <input id="lblLives" type="text" />
     <br />
+    <p id="name_of_player"></p>
     <canvas id="canvas" height="600" width="600"></canvas>
     <style>
         #body_game {
-            background: url('background.jpg') no-repeat center center fixed;
+            background: url('source/background.jpg') no-repeat center center fixed;
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -693,7 +724,7 @@
         #canvas
         {
             position: fixed;
-            top:15%;
+            top:20%;
             left: 35%;
         }
     </style>
@@ -738,6 +769,7 @@
         var food_remain;
         var invincivle;
         var in_time;
+        var song;
 
 
         //This function will start the game
@@ -765,7 +797,7 @@
             previous_kind_fifty_pointer = 0;
             pac_color = "yellow";
 
-            song_src = "PacMan.mp3";
+            song_src = "source/PacMan.mp3";
 
             //Number of food
             food_remain = food_remain-6;
@@ -891,7 +923,7 @@
 
 
             //Starting song
-            var song = new setBackgroundSong(song_src);
+            song = new setBackgroundSong(song_src);
             //song.start();
 
             //If food still remains
@@ -1215,10 +1247,10 @@
                         Draw5(center);
                     }
                     else if (board[i][j] === 9) {//Drawing clock
-                        DrawImgOnBoard(center,"clock.jpg");
+                        DrawImgOnBoard(center,"source/clock.jpg");
                     }
                     else if (board[i][j] === 10) {//Drawing invincible
-                        DrawImgOnBoard(center,"invincible.jpg");
+                        DrawImgOnBoard(center,"source/invincible.jpg");
                     }
                 }
             }
@@ -1394,24 +1426,30 @@
             var currentTime = new Date();
             time_elapsed = (currentTime - start_time) / 1000;
 
-//        if (score >= 50) {
-            if (score >= 500) {
-                window.clearInterval(interval);
-                window.alert("Game completed");
-            }
-            else{
-                if(time_elapsed>=time_limit)
-                {
-//                lblTime.value = 0;
-                    window.clearInterval(interval);
-                    window.alert("Game completed");
-                }
-                else
-                {
-                    Draw();
-                }
 
+            if(time_elapsed>=time_limit||lives_remaining<1)
+            {
+                window.clearInterval(interval);
+                if (lives_remaining < 1) {
+                    lblLives.value = 0;
+                    window.alert("You lost!");
+                }
+                else {
+                    if (score < 150) {
+                        window.alert("You can do better");
+                    }
+                    else {
+                        window.alert("We have a Winner!!!");
+                    }
+                }
+                //song.stop();
             }
+            else
+            {
+                Draw();
+            }
+
+
         }
 
 
@@ -1674,6 +1712,33 @@
 
 </section>
 </body>
+
+<footer id="footer">
+<style>
+    #footer
+    {
+        position: fixed;
+        bottom: 0;
+        background-color: #cee9ea;
+        width: 100%;
+        text-align: center;
+    }
+</style>
+    <h4>
+        <p>
+            <b>Best Pacman Online</b>
+            <br/>
+            <i>Contact information:</i>
+
+            Guy Schlesinger
+            <a href="mailto:guysc@post.bgu.ac.il"> guysc@post.bgu.ac.il</a>
+
+            && Jonathan Shaya
+            <a href="mailto:shayay@post.bgu.ac.il">shayay@post.bgu.ac.il</a></p>
+    </h4>
+
+
+</footer>
 </html>
 
 
