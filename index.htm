@@ -327,14 +327,14 @@
         }
     </style>
     <div class="userdiv" id="div_login">
-        <h1>Login:</h1>
-        <label>Username</label>
+        <h1 class="sign_up_labels">Login:</h1>
+        <label class="sign_up_labels">Username</label>
         <br/>
         <input class="inptUser" type="text" id="username_login" placeholder="Username">
         <br/>
-        <label for="password_signup">Password</label>
+        <label for="password_signup" class="sign_up_labels">Password</label>
         <br/>
-        <input class="inptUser" type="password" id="password_login" placeholder="Password">
+        <input class="inptUser" type="password" id="password_login" placeholder="Password" class="sign_up_labels">
         <br/>
         <label id = "errors_login" class="errorMessages"></label>
         <br/>
@@ -736,11 +736,14 @@
         var lives_remaining;
         var numOfMonsters;
         var food_remain;
+        var invincivle;
+        var in_time;
 
 
         //This function will start the game
         //It will initialize all the variables and set the interval
         function Start() {
+
             shape = new Object();
             fifty_pointer_loc = new Object();
             if(typeof interval!== 'undefined')
@@ -761,6 +764,7 @@
             init = true;
             previous_kind_fifty_pointer = 0;
             pac_color = "yellow";
+
             song_src = "PacMan.mp3";
 
             //Number of food
@@ -783,6 +787,9 @@
             //number of walls
             var num_of_walls = 5;
             cnt = cnt - num_of_walls - 1 - numOfMonsters -6;
+
+            invincivle = false;
+            in_time = 0;
 
 
             //Random location of fifty pointer
@@ -880,6 +887,8 @@
                     }
                 }
             }
+
+
 
             //Starting song
             var song = new setBackgroundSong(song_src);
@@ -1009,7 +1018,7 @@
                 to_big_circle = 0.35 * Math.PI;
                 eye_center_y = 5;
                 eye_center_x= 15;
-                pac_color = "red";
+
             }
             else
             {
@@ -1021,7 +1030,7 @@
                     to_big_circle = 0.85 * Math.PI;
                     eye_center_x = -5;
                     eye_center_y = -15;
-                    pac_color = "green";
+
                 }
                 else
                 {
@@ -1032,7 +1041,7 @@
                         to_big_circle = 1.35 * Math.PI;
                         eye_center_y = -5;
                         eye_center_x = -15;
-                        pac_color = "blue";
+
                     }
                     else
                     {
@@ -1043,7 +1052,7 @@
                             to_big_circle = 1.85 * Math.PI;
                             eye_center_x = 5;
                             eye_center_y=-15;
-                            pac_color = "pink";
+
                         }
                     }
                 }
@@ -1145,10 +1154,21 @@
         //This function will draw the background of the board
         function DrawBackground(center)
         {
+
+
             context.beginPath();
             context.rect(center.x - 30, center.y - 30, 60, 60);
             context.fillStyle ="#c2b280"; //color
             context.fill();
+
+
+        }
+        function DrawImgOnBoard(center,url)
+        {
+            var img = new Image;
+            img.src = url;
+            context.beginPath();
+            context.drawImage(img,center.x-30,center.y-30,60,60);
         }
         //This function will draw the board
         function Draw() {
@@ -1173,8 +1193,8 @@
                     if (board[i][j] === 2) {
                         DrawPacman(center);
                     } else if (board[i][j] === 1) {//Drawing one pointers
-                        //DrawOnePointer(center);
-                        Draw5(center);
+                        DrawOnePointer(center);
+                        //Draw5(center);
 
                     } else if (board[i][j] === 4) {//Drawing walls
                         DrawWall(center);
@@ -1193,6 +1213,12 @@
                     }
                     else if (board[i][j] === 8) {//Drawing 5 pointer
                         Draw5(center);
+                    }
+                    else if (board[i][j] === 9) {//Drawing clock
+                        DrawImgOnBoard(center,"clock.jpg");
+                    }
+                    else if (board[i][j] === 10) {//Drawing invincible
+                        DrawImgOnBoard(center,"invincible.jpg");
                     }
                 }
             }
@@ -1235,42 +1261,40 @@
             {
                 return 5;
             }
+            //Clock
+            if(kind==9)
+            {
+                return 0;
+            }
+            //Invincible
+            if(kind==10)
+            {
+                return 0;
+            }
         }
 
-        //This function will get the kind of a certain position (one pointer/monster/fifty pointer and so on..) and will return the color of it
-        function GetColor(kind)
-        {
-            //Nothing
-            if(kind==0)
-                return "black";
-            //One pointer
-            if(kind == 1)
-            {
-                return "black";
-            }
-            //Fifty pointer
-            if(kind == 3)
-            {
-                return "blue";
-            }
-            //25 pointer
-            if(kind == 6)
-            {
-                return color25;
-            }
-            //15 pointer
-            if(kind == 7)
-            {
-                return color15;
-            }
-            //5 pointer
-            if(kind == 8)
-            {
-                return color5;
-            }
-        }
+
         //This function will update the position of the pacman and the position of the monster
         function UpdatePosition() {
+
+            var clockChance = 0.01;
+            var rand = Math.random();
+            if(clockChance >= rand)
+            {
+                var empty = findRandomEmptyCell(board);
+                board[empty[0]][empty[1]] = 9;
+            }
+            var invincibleChance = 0.005;
+            rand = Math.random();
+            if(invincibleChance >= rand)
+            {
+                var empty = findRandomEmptyCell(board);
+                board[empty[0]][empty[1]] = 10;
+            }
+
+
+
+
             board[shape.i][shape.j] = 0;
             var x = GetKeyPressed();
             //Up
@@ -1301,6 +1325,18 @@
 
             //Updating the score
             score = score + GetScore(board[shape.i][shape.j]);
+
+            if(board[shape.i][shape.j] == 9) {
+                time_limit = time_limit + 10;
+            }
+            else
+            {
+                if(board[shape.i][shape.j] == 10) {
+                    invincivle = true;
+                    in_time = 20;
+                    pac_color = "red";
+                }
+            }
 
             //Normal update
             if(board[shape.i][shape.j] !=3 && fifty_pointer_is_alive)
@@ -1344,13 +1380,20 @@
                     }
                 }
             }
-
+            if(in_time>0)
+            {
+                in_time --;
+            }
+            else
+            {
+                in_time = 0;
+                invincivle = false;
+                pac_color = "yellow";
+            }
 
             var currentTime = new Date();
             time_elapsed = (currentTime - start_time) / 1000;
-            if (score >= 20 && time_elapsed <= 10) {
-                pac_color = "green";
-            }
+
 //        if (score >= 50) {
             if (score >= 500) {
                 window.clearInterval(interval);
@@ -1372,7 +1415,7 @@
         }
 
 
-        //This function will return true if the fiftypointe is allowed to step on the given kind
+        //This function will return true if the fifty pointer is allowed to step on the given kind
         function IsAllowedToFiftyPointer(kind)
         {
             return kind!=2 && kind!=4 && kind!=5;
@@ -1469,9 +1512,9 @@
             color15 = color_picker15.value;
             color5 = color_picker5.value;
 
-            time_limit = game_limit.value;
-            numOfMonsters = num_of_monters.value;
-            food_remain = num_of_balls.value;
+            time_limit = Number(game_limit.value);
+            numOfMonsters = Number(num_of_monters.value);
+            food_remain = Number(num_of_balls.value);
         }
         //This function will draw the 25 pointer
         function Draw25(center)
@@ -1558,13 +1601,13 @@
 
         //This function will return true if the monster is allowed to step on the given kind
         function IsAllowedToMonster(kind) {
-            return kind != 2 && kind != 4 && kind!=3 && kind!=5;
+            return kind != 2 && kind != 4 && kind!=3 && kind!=5 ;
         }
 
         function canEat(monster_loc){
             if((monster_loc.j-shape.j==0&&monster_loc.i-shape.i==1)||(monster_loc.j-shape.j==0&&monster_loc.i-shape.i==-1)
                 ||(monster_loc.i-shape.i==0&&monster_loc.j-shape.j==1)||(monster_loc.i-shape.i==0&&monster_loc.j-shape.j==-1)){
-                return true;
+                return !invincivle;
             }
             return false;
         }
